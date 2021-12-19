@@ -63,7 +63,8 @@ for i in range(6):
 itemPos[0][2] = True
 item = ["WhiteBullet", "None", "None", "None", "None", "None"] 
 
- #유령 속성
+
+ #ghost 속성
 ghost1 = {'num': 0, 'pos': pygame.Rect(-50,75,75,75), 'dir':"RIGHT", 'moveSpeed': 3, 'color': "White"} 
 ghost2 = {'num': 1, 'pos': pygame.Rect(SCREENWIDTH,185,75,75), 'dir':"LEFT", 'moveSpeed': 3, 'color': "White"}
 ghost3 = {'num': 2, 'pos': pygame.Rect(-50,295,75,75), 'dir':"RIGHT", 'moveSpeed': 3, 'color': "White"}
@@ -185,10 +186,10 @@ imageShopPurpleBullet = pygame.image.load("images/shopPurpleBullet.png")
 imageShopPurpleBullet = pygame.transform.scale(imageShopPurpleBullet,(100,130))
 
 imageShopIncreaseTime = pygame.image.load("images/shopIncreaseTime.png")
-imageShopIncreaseTime = pygame.transform.scale(imageShopIncreaseTime,(105,130))
+imageShopIncreaseTime = pygame.transform.scale(imageShopIncreaseTime,(100,130))
 
 imageShopReduceGhostSpeed = pygame.image.load("images/shopReduceGhostSpeed.png")
-imageShopReduceGhostSpeed = pygame.transform.scale(imageShopReduceGhostSpeed,(110,130))
+imageShopReduceGhostSpeed = pygame.transform.scale(imageShopReduceGhostSpeed,(100,130))
 
 imageShopHealPack = pygame.image.load("images/shopHealPack.png")
 imageShopHealPack = pygame.transform.scale(imageShopHealPack,(100,132))
@@ -360,8 +361,8 @@ def setShopUI(): #Shop UI
             screen.blit(imageCoin,[80,80])
             screen.blit(imageShopWhiteBullet,[80,120])
             screen.blit(imageShopRedBullet,[190,120])
-            screen.blit(imageShopIncreaseTime,[306,120])
-            screen.blit(imageShopReduceGhostSpeed,[412,120])
+            screen.blit(imageShopIncreaseTime,[308,120])
+            screen.blit(imageShopReduceGhostSpeed,[420,120])
 
             screen.blit(imageShopBlueBullet,[80,275])
             screen.blit(imageShopPurpleBullet,[190,275])
@@ -445,7 +446,7 @@ def calculateGhost4EndTimeMinusGameEndTime(ghost4EndTime): #게임 끝날시 gho
     return ghost4ResetTime
 
     
-def changeCanMoveEndSceneToNextSceneToTrue(): #게임 끝날시 ghost4를 초기화 하는 시간만큼 지난 후 게임 시작할 수 있게 한다.
+def changeCanMoveEndSceneToNextSceneToTrue(): #게임 종료시 ghost4를 초기화하는 시간만큼 지난 후 게임을 시작할 수 있게 한다.
     global CanMoveEndSceneToNextScene
     CanMoveEndSceneToNextScene = True
 
@@ -456,21 +457,30 @@ def checkHaveItem(): #아이템창에 아이템을 가지고있는지 확인한�
     for i in range(6):
         if item[i] == "None":
             if i==5:
-                haveItem = False #아이템을 하나도 가지고 있지 않다고 변경.             
+                haveItem = False #아이템을 하나도 가지고 있지 않다고 변경          
                 ghost4['currentItemBoxIndex'] = "None"              
         else:
             haveItem = True
             break
 
 
-def checkNoItemAndCoin(): #아이템창에 아이템이 하나도 없고, 상점에서 아이템을 살 수 없을 경우 게임 종료.
+def checkNoItemAndCoin(): #아이템창에 아이템이 하나도 없고, 상점에서 아이템을 살 수 없을 경우 게임 종료
     global coin, haveItem, isGameOver
     
-    if coin < 500 and haveItem == False:
+    if coin < 500 and haveItem == False: #총알을 살 수 있는 최소 금액
         isGameOver = True
+        return
+
+    if coin < 500:
+        for i in range(6):
+            if "Bullet" in item[i]: #총알을 가지고 있을 경우
+                return
+            else:
+                if i==5: #아이템을 가지고 있으나 총알도 없고 총알을 살 돈도 없는 경우 게임 종료
+                    isGameOver = True
 
         
-def takeAwayItem(): #ghost4가 나타난 자리의 아이템을 가져간다.
+def takeAwayItem(): #ghost4가 나타난 자리의 아이템을 가져간다
     global killGhost4Bool
 
     if killGhost4Bool == False: #ghost4를 못 죽였을 경우
@@ -549,15 +559,15 @@ def setRandomColor(ghostNum): #좌우로 움직이는 유령의 색깔을 랜덤
 
     if isDeadCheatingGhost == True:
         if timeLimit >= 290:
-            randNum = 0 #게임을 시작한뒤 10초까지는 하얀색 유령만 나오게 설정.
+            randNum = 0 #게임을 시작한뒤 10초까지는 하얀색 유령만 나오게 설정
     else:
         if timeLimit >= 50:
-            randNum = 0 #게임을 시작한뒤 10초까지는 하얀색 유령만 나오게 설정.
+            randNum = 0 #게임을 시작한뒤 10초까지는 하얀색 유령만 나오게 설정
         
     return color[randNum]    
 
 
-def matchGhostImage(ghostColor, ghostDir): #유령의 색깔에 맞게 이미지를 매치시킨다.
+def matchGhostImage(ghostColor, ghostDir): #유령의 색깔에 맞게 이미지를 매치시킨다
     if ghostColor == "White": #하얀색일 경우 
         if ghostDir == "LEFT":
             return imageWhiteGhostL
@@ -576,7 +586,7 @@ def matchGhostImage(ghostColor, ghostDir): #유령의 색깔에 맞게 이미지
 
 
 def moveGhost(): #유령들을 이동시키며 유령의 이미지 출력
-    global clickShop, haveItem
+    global clickShop, haveItem, isMainScene
     global isSettingGhost4, alreadyWorking, ghost4StartTime, copyGhost4RandTime
 
     for ghost in ghosts:      
@@ -595,8 +605,8 @@ def moveGhost(): #유령들을 이동시키며 유령의 이미지 출력
                                 threading.Timer(randTime, setGhost4RandomPos).start()
                                 alreadyWorking = True       
                 else:
-                    checkHaveItem()
-                    checkNoItemAndCoin()
+                    if isMainScene == True:
+                        checkHaveItem()
             break
 
         #up, middle, down line ghost
@@ -610,7 +620,10 @@ def moveGhost(): #유령들을 이동시키며 유령의 이미지 출력
             if clickShop == False:
                 ghost['pos'][0] -= ghost['moveSpeed']
         
-        checkReachedEnd(ghost['num']) 
+        checkReachedEnd(ghost['num'])
+        
+    if isMainScene == True:
+        checkNoItemAndCoin()
        
 
 def checkReachedEnd(ghostNum): #유령이 끝에 도달했는지 확인    
@@ -668,17 +681,17 @@ def checkCurrentBulletAndGhostColor(ghost): #현재 총알과 유령의 색깔�
                 if ghost['color'] == "Purple":#현재 선택한 유령의 색깔이 보라색일 경우
                     return True
                 
-            #총알 말고 다른 다른 아이템일 경우
+            #총알 말고 다른 아이템일 경우
             return False
 
 
-def changeAvailableTimeForShopToTrue(): #Shop을 이용할 수 있도록 한다.
+def changeAvailableTimeForShopToTrue(): #Shop을 이용할 수 있도록 한다
     global isAvailableTimeForShop
     
     isAvailableTimeForShop = True 
 
 
-def compareMousePosAndShopPos(): #마우스와 Shop 위치를 비교
+def compareMousePosAndShopPos(): #마우스와 Shop icon 위치를 비교
     global clickShop, isAvailableTimeForShop
     global isSettingGhost4
 
@@ -688,7 +701,7 @@ def compareMousePosAndShopPos(): #마우스와 Shop 위치를 비교
     if isAvailableTimeForShop == False:
         return
         
-    if ghost4['pos'][1] < SCREENHEIGHT : #ghost4가 나타나있을 경우 상점을 못열게 한다.
+    if ghost4['pos'][1] < SCREENHEIGHT : #ghost4가 나타나있을 경우 상점을 못열게 한다
         return
     
     if clickShop == True: #상점을 눌렀을 때
@@ -707,10 +720,10 @@ def compareMousePosAndShopPos(): #마우스와 Shop 위치를 비교
         
     else: #상점이 열린상태일 경우
         if isSamePos[0] == True and isSamePos[1] == True:
-            clickShop = False #상점을 닫는다.
+            clickShop = False #상점을 닫는다
             isAvailableTimeForShop = False
-            threading.Timer(5, changeAvailableTimeForShopToTrue).start() #상점을 닫은 후 5초 후 상점 이용 가능하게 함.
-            isSettingGhost4 = True #ghost4를 생성할수 있도록 함.
+            threading.Timer(5, changeAvailableTimeForShopToTrue).start() #상점을 닫은 후 5초 후 상점 이용 가능하게 함
+            isSettingGhost4 = True #ghost4를 생성할수 있도록 함
         
     
 def compareMousePosAndGhostPos(mousePos):  #마우스와 유령의 위치를 비교
@@ -733,22 +746,22 @@ def compareMousePosAndGhostPos(mousePos):  #마우스와 유령의 위치를 비
 
     for ghost in ghosts:       
         if isSamePos[ghost['num']][0] == True and isSamePos[ghost['num']][1] == True: #마우스의 위치와 유령의 위치가 일치할 경우
-            return (True, ghost) #마우스의 위치와 유령이 같은 위치일 경우,  
+            return (True, ghost) #마우스의 위치와 유령이 같은 위치일 경우
      
     return (False, None)  #마우스의 위치와 유령이 다른 위치일 경우
 
 
-def makeMousePosLookLikeGun(): #마우스가 위치한 곳을 총구로 보이게 한다.
+def makeMousePosLookLikeGun(): #마우스가 위치한 곳을 총구로 보이게 한다
     mousePos = pygame.mouse.get_pos()
     screen.blit(imageGunPoint,[mousePos[0]-32.5,mousePos[1]-32.5])
 
 
-def changeHitTimeOverToFalse(): #유령에게 플레이어가 맞았을 시(총알 색깔 잘못 사용시) 0.5초만큼 이펙트 띄우기 관련
+def changeHitTimeOverToFalse(): #유령에게 플레이어가 맞았을 시(총알 색깔 잘못 사용시) 0.5초만큼 이펙트 띄우기 
     global hitEffectTimeOver
     hitEffectTimeOver = True
 
 
-def setHitEffect(): #유령의 색깔에 맞지 않게 공격했을 경우 유령에게 플레이어가 공격당한다.
+def setHitEffect(): #유령의 색깔에 맞지 않게 공격했을 경우 유령에게 플레이어가 공격당한다
     global hitEffectTimeOver
     
     if hitEffectTimeOver == False:
@@ -759,7 +772,7 @@ def setHitEffect(): #유령의 색깔에 맞지 않게 공격했을 경우 유�
 def manageAfterShooting(): #총을 쏜 이후 관리
     global playerHp, clickShop, hitEffectTimeOver
     
-    if clickShop == True: #상점이 열려있는 경우에는 화면상에 있는 유령을 제거하지 못하게 한다.
+    if clickShop == True: #상점이 열려있는 경우에는 화면상에 있는 유령을 제거하지 못하게 한다
         return
     
     ghostObj = compareMousePosAndGhostPos(pygame.mouse.get_pos())[1]
@@ -783,8 +796,8 @@ def manageAfterShooting(): #총을 쏜 이후 관리
         
 #----------------------------------------------------------------------------------------
 # 상점 아이템 사용 관련
-def putShopItemInItemBox(shopItem): #상점에서 구매를 누른 후 구매 가능하면 해당 아이템을 빈 아이템 칸에 넣는다.
-    #아이템 칸의 왼쪽부터 검사하여 빈곳이 있으면 해당자리에 아이템을 넣는다.
+def putShopItemInItemBox(shopItem): #상점에서 구매를 누른 후 구매 가능하면 해당 아이템을 빈 아이템 칸에 넣는다
+    #아이템 칸의 왼쪽부터 검사하여 빈곳이 있으면 해당자리에 아이템을 넣는다
     for i in range(6):
         if item[i] == "None":
             item[i] = shopItem
@@ -792,20 +805,21 @@ def putShopItemInItemBox(shopItem): #상점에서 구매를 누른 후 구매 �
 
 
 def compareClickedItemPriceToCoin(shopItemName): #사고싶은 아이템과 현재 코인 비교
-    global coin
+    global coin, haveItem
     
     #상점 아이템 가격
-    shopItemPrice = {'WhiteBullet': 500, 'RedBullet':500, 'IncreaseTime': 1500,
-                 'ReduceGhostSpeed': 1000, 'BlueBullet':500, 'PurpleBullet': 700,
-                 'HealPack': 2000, 'DoubleCoin': 1500}
+    shopItemPrice = {'WhiteBullet': 500, 'RedBullet':500, 'IncreaseTime': 500,
+                 'ReduceGhostSpeed': 500, 'BlueBullet':500, 'PurpleBullet': 700,
+                 'HealPack': 700, 'DoubleCoin': 500}
 
     if shopItemPrice[shopItemName] <= coin:
+        haveItem = True
         buySound.play()
         coin -= shopItemPrice[shopItemName]
         putShopItemInItemBox(shopItemName)
 
 
-def changeShopItemIndexToString(shopItemIndex): #아이템 인덱스를 문자열로 바꾼다.
+def changeShopItemIndexToString(shopItemIndex): #아이템 인덱스를 문자열로 바꾼다
     if shopItemIndex==0:
         return 'WhiteBullet'
     elif shopItemIndex==1:
@@ -832,8 +846,7 @@ def checkAlreadyHaveItem(selectedShopItem): #구매하고 싶은 아이템이 �
     return False #해당 아이템을 가지고 있지 않음을 리턴
 
 
-#아이템 창이 전부 아이템으로 채워져 있는지 검사
-def checkAllItemBoxIsFilled():
+def checkAllItemBoxIsFilled(): #아이템 창이 전부 아이템으로 채워져 있는지 검사
     global item
     
     for i in range(6):
@@ -852,7 +865,7 @@ def checkClickPurchase(): #상점에서 아이템 구매를 클릭했는지 검�
     shopItemClickBuyBool = []
     mousePos = pygame.mouse.get_pos()
     
-    if clickShop == False: #상점이 닫혀있다면 구매할수 없게 만든다.
+    if clickShop == False: #상점이 닫혀있다면 구매할수 없게 만든다
         return
     
     for i in range(8):
@@ -1094,11 +1107,11 @@ def setTutorialPage6(): #아이템에 대해 설명해주는 페이지
     screen.blit(imageDoubleCoin, [102, 350])
 
     if cheatingGhostManagement == True and isDeadCheatingGhost == False: 
-        #6페이지에서 c누를 경우 치트유령 죽일 수 있게 띄우기 + 한번만 치트유령이 나타날수 있게.
+        #6페이지에서 c누를 경우 치트유령 죽일 수 있게 띄우기 + 한번만 치트유령이 나타날수 있게(죽인 후 다시 생성 x)
         screen.blit(imageCheatingGhost, [500, 420]) 
 
     
-def checkPreviousOrNextPageButton(): #이전, 다음 페이지 이동 버튼 눌렀는지 체크한다.
+def checkPreviousOrNextPageButton(): #이전, 다음 페이지 이동 버튼 눌렀는지 체크한다
     global currentPage
     
     mousePos = pygame.mouse.get_pos()
@@ -1118,7 +1131,7 @@ def checkPreviousOrNextPageButton(): #이전, 다음 페이지 이동 버튼 눌
                 currentPage = currentPage+1
 
 
-def checkExitTutorialSceneButton(): #Tutorial에서 X버튼(오른쪽 상단에 있는 UI) 눌렀는지 확인한다.
+def checkExitTutorialSceneButton(): #Tutorial에서 X버튼(오른쪽 상단에 있는 UI) 눌렀는지 확인한다
     global isTutorialScene, isStartScene
     global currentPage
     
@@ -1170,7 +1183,7 @@ def setPreviousAndNextPageButton(): #이전, 다음 페이지 이동 버튼 띄�
         
 #-------------------------------------------------------------------------------------------
 #Scene 관리        
-def resetGame(): #게임 관련 정보를 초기화한다. - isGameOver,killedGhostCnt는 제외.(다른 곳에서 제어)
+def resetGame(): #게임 관련 정보를 초기화한다 - isGameOver,killedGhostCnt는 제외(다른 곳에서 제어)
     global ghostPrice, timeLimit, coin, playerHp, printEmptyHpCnt, item, itemPos, isDeadCheatingGhost
     global isAvailableTimeForShop, isChangingTime, haveItem, isSettingGhost4, hitEffectTimeOver, alreadyWorking #True로 초기화
     global killGhost4Bool, clickShop, printTime0, useItemDoubleCoin ,useItemReduceGhostSpeed #False로 초기화
@@ -1229,7 +1242,7 @@ def resetGame(): #게임 관련 정보를 초기화한다. - isGameOver,killedGh
     alreadyWorking = boolValue
         
 
-def checkGoTitleAndReplay(): #GameOver시 클릭 검사. 
+def checkGoTitleAndReplay(): #GameOver시 클릭 검사
     global isStartScene ,isEndScene, isMainScene, CanMoveEndSceneToNextScene
     global isGameOver, killedGhostCnt
     
@@ -1291,7 +1304,7 @@ def setEndScene(): #End Scene Game Loop
     pygame.display.update()
         
 
-def fixStartSceneGhostColor(): #Start Scene에서 유령의 색깔을 고정해놓는다.
+def fixStartSceneGhostColor(): #Start Scene에서 유령의 색깔을 고정해놓는다
     global haveItem
     
     for ghost in ghosts:
@@ -1307,7 +1320,7 @@ def fixStartSceneGhostColor(): #Start Scene에서 유령의 색깔을 고정해�
 def makeGhostNameAtStartScreen(): #시작화면에서 유령의 이름 붙여주기
     font = pygame.font.SysFont("arial",20,True)
     ghost1NameText = font.render("Game Start", True, WHITE)
-    ghost2NameText = font.render("Go Turtorial", True, WHITE)
+    ghost2NameText = font.render("Go Tutorial", True, WHITE)
     ghost3NameText = font.render("Game Exit", True, WHITE)
     
     screen.blit(ghost1NameText, [ghost1['pos'][0], ghost1['pos'][1]-15])
@@ -1336,7 +1349,7 @@ def moveNextScene(): #StartScene에서 선택한 유령의 이름대로 Scene �
             resetGame()
             killedGhostCnt =0
             return
-        elif isSamePos[1]['num'] == 1: #Go Turtorial일 경우
+        elif isSamePos[1]['num'] == 1: #Go Tutorial일 경우
             shootSound.play()
             isStartScene = False
             isTutorialScene = True
@@ -1406,7 +1419,7 @@ def setMain(): #Main Scene Game Loop
         isEndScene = True
         resetGame()
         return
-    
+
     screen.fill(WHITE)
     setBackground()
     setHpUI()
@@ -1429,25 +1442,12 @@ def setMain(): #Main Scene Game Loop
             manageAfterShooting()
             compareMousePosAndShopPos()
             checkClickPurchase()
+    
             
     makeMousePosLookLikeGun()
     mainClock.tick(60)
     pygame.display.update()
     checkIsNoHp()
-
-
-
-
-#아이템 구매, 구매한 아이템을 아이템창에 넣기, 돈 계산, 오류처리 까지 완성.
-#아이템을 사용하는 거 구현완료 (12월 4일- 토요일 새벽 2시)
-#씬 나누기 구현 완료 (12월 5일 - 새벽 1시 25분)
-#씬 간 이동 구현 완료 (12월 5일 - 새벽 3시 41분)
-#12월 15일 튜토리얼 구현 완료
-#그냥 ghost4생성함수가 동작한 시간을 기준으로 게임이 끝난 시간까지 계산을 해서 그 시간만큼 기다린 다음 게임 재시작 하게 하기.
-#위 사항까지 모든 내용 구현 완료 (12월 15일 7시 40분)
-#추가적으로 치트 유령 구현 완료.(12월 16일 3시 30분)
-
-
 
 #Game Loop
 while True:
