@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
 public class Item : MonoBehaviour
@@ -32,7 +33,10 @@ public class Item : MonoBehaviour
         for(int i=0; i<playerItem.Length; i++)
         {
             playerItem[i] = ItemImg[i].GetComponent<Image>().sprite.name;
+            //Debug.Log(playerItem[i]);
         }
+
+
 
         itemCompartmentPosX[0] = 330;
         itemCompartmentPosX[1] = 190;
@@ -73,9 +77,9 @@ public class Item : MonoBehaviour
             ItemImg[i+1].gameObject.SetActive(true);
             while (ItemCompartmentBtn[i].transform.localPosition.x > itemCompartmentPosX[i])
             {
-                ItemCompartmentBtn[i].transform.localPosition += new Vector3(-20, 0, 0);
-                ItemImg[i+1].transform.localPosition += new Vector3(-20, 0, 0);
-                yield return new WaitForSeconds(0.01f);
+                ItemCompartmentBtn[i].transform.localPosition += new Vector3(-70, 0, 0);
+                ItemImg[i+1].transform.localPosition += new Vector3(-70, 0, 0);
+                yield return new WaitForSeconds(0.005f);
             }
         }
         usingItemBtn = false;
@@ -87,9 +91,9 @@ public class Item : MonoBehaviour
         {
             while (ItemCompartmentBtn[i].transform.localPosition.x < itemCompartmentPosX[i] + 140)
             {
-                ItemCompartmentBtn[i].transform.localPosition += new Vector3(+20, 0, 0);
-                ItemImg[i + 1].transform.localPosition += new Vector3(+20, 0, 0);
-                yield return new WaitForSeconds(0.01f);
+                ItemCompartmentBtn[i].transform.localPosition += new Vector3(+70, 0, 0);
+                ItemImg[i + 1].transform.localPosition += new Vector3(+70, 0, 0);
+                yield return new WaitForSeconds(0.005f);
             }
             ItemCompartmentBtn[i].gameObject.SetActive(false);
             ItemImg[i+1].gameObject.SetActive(false);
@@ -147,5 +151,11 @@ public class Item : MonoBehaviour
         }
     }
 
+    public void OpneShop()
+    {
+        Debug.Log("openShop 함수 작동 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+        TimeController.instance.SaveTimeData();
+        SceneManager.LoadScene("Shop");     
+    }
 
 }//End Class

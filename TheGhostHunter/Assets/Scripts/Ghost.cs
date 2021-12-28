@@ -15,7 +15,7 @@ public class Ghost : MonoBehaviour
 
     private void Awake()
     {
-        for(int i=0; i<3; i++)
+        for (int i=0; i<3; i++)
         {
             //유령 오브젝트
             GhostObj[i] = null;
@@ -42,6 +42,7 @@ public class Ghost : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+       
         MakeGhost();
     }
 
@@ -196,10 +197,15 @@ public class Ghost : MonoBehaviour
 
                 ghostNum = returnGhostNum(hit.collider.name);
                 //Debug.Log(hit.collider.name);
-                if(CompareGhostColorToBullet(ghostNum) == true)
+                if(CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
                 {
                     Debug.Log(hit.collider.name + "을 죽였습니다.");
                     ResetGhostAttribute(ghostNum);
+                }
+                else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+                {
+                    Player.instance.hp -= 1;
+                    Debug.Log("Hp :" + Player.instance.hp);
                 }
             }
         }
