@@ -32,8 +32,7 @@ public class Shop : MonoBehaviour
                 else
                 {
                     shopItem[row, col] = "";
-                }
-                
+                }               
             }
         }
         
@@ -44,18 +43,17 @@ public class Shop : MonoBehaviour
 
     private void Update()
     {
-        //if(SceneManager.GetActiveScene().name == "Shop")
-        //{
-        //    CoinText.text = coin.ToString();
-        //}
+        if (SceneManager.GetActiveScene().name == "Shop")
+        {
+            CoinText.text = coin.ToString();
+        }
         //Debug.Log("Shop Time Data : " + PlayerPrefs.GetFloat("Time"));
     }
 
     public void CloseShop()
     {
-        //TimeController.instance.SaveTimeData();
+        Item.instance.SaveItemData();
         SceneManager.LoadScene("Main");
-        //TimeController.instance.LoadTimeData();
     }
 
 
@@ -69,10 +67,13 @@ public class Shop : MonoBehaviour
             {
                 if(int.Parse(shopItem[i,1]) <= coin)
                 {
-                    for(int a=5; a>=1; a--)
+                    for(int a=5; a >=0; a--)
                     {
-                        if(Item.instance.playerItem[a] == "null")
+                        if(Item.instance.playerItem[a] == "empty")
                         {
+                            if (shopItem[i, 0] == "")
+                                continue;
+
                             coin -= int.Parse(shopItem[i, 1]); //코인 차감
 
                             //구매한 아이템을 아이템 창에 왼쪽부터 채우기

@@ -13,6 +13,7 @@ public class TimeController : MonoBehaviour
     private void Awake()
     {
         instance = this;
+
         LoadTimeData();
     }
     // Update is called once per frame
@@ -36,13 +37,21 @@ public class TimeController : MonoBehaviour
     {
         PlayerPrefs.SetFloat("Time", limitTime);
         PlayerPrefs.Save();
-        Debug.Log("Save Time Data : " + PlayerPrefs.GetFloat("Time"));
+        //Debug.Log("Save Time Data : " + PlayerPrefs.GetFloat("Time"));
     }
 
-    public void LoadTimeData()
+    void LoadTimeData()
     {
-        limitTime = PlayerPrefs.GetFloat("Time");
-        Debug.Log("Get Time Data(playerPrefs) : " + PlayerPrefs.GetFloat("Time"));
-        Debug.Log("Get Time Data(limitTime) : " + limitTime);
+        if(!PlayerPrefs.HasKey("Time"))
+        {
+            limitTime = PlayerPrefs.GetFloat("Time",60);
+        }
+        else
+        {
+            limitTime = PlayerPrefs.GetFloat("Time");
+        }
+        
+        //Debug.Log("Get Time Data(playerPrefs) : " + PlayerPrefs.GetFloat("Time"));
+        //Debug.Log("Get Time Data(limitTime) : " + limitTime);
     }
 }//End Class

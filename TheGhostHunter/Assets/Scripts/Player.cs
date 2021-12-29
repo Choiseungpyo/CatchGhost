@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    [HideInInspector]
     public int hp = 3;
 
     public GameObject[] HpImg = new GameObject[3];
@@ -14,7 +14,8 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        Debug.Log("Hp : " + hp);
+
+        LoadHpData();
     }
 
 
@@ -66,12 +67,21 @@ public class Player : MonoBehaviour
         }
     }
 
-
-    void ResetData()
+    public void SaveHpData()
     {
-        PlayerPrefs.DeleteAll();
+        PlayerPrefs.SetInt("Hp", hp);
         PlayerPrefs.Save();
     }
 
-
+    void LoadHpData()
+    {
+        if (!PlayerPrefs.HasKey("Hp"))
+        {
+            hp = PlayerPrefs.GetInt("Hp", 3);
+        }
+        else
+        {
+            hp = PlayerPrefs.GetInt("Hp");
+        }
+    }
 }//End Class

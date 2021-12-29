@@ -24,29 +24,57 @@ public class Item : MonoBehaviour
     {
         instance = this;
 
-        for (int i = 0; i < 5; i++)
+        if (SceneManager.GetActiveScene().name == "Main")
         {
-            ItemCompartmentBtn[i].gameObject.SetActive(false);
-            
-        }
+            for (int i = 0; i < ItemCompartmentBtn.Length; i++)
+            {
+                ItemCompartmentBtn[i].gameObject.SetActive(false);
+            }
 
-        for(int i=0; i<playerItem.Length; i++)
+            //for (int i = 0; i < playerItem.Length; i++)
+            //{
+            //    playerItem[i] = ItemImg[i].GetComponent<Image>().sprite.name;           
+            //}
+
+            //처음 시작은 하얀색 총알로만 시작
+            //ItemImg[0].gameObject.GetComponent<Image>().sprite = Resources.Load("WhiteBullet", typeof(Sprite)) as Sprite;
+            //playerItem[0] = ItemImg[0].gameObject.GetComponent<Image>().sprite.name;
+
+            LoadItemData();
+            //Debug.Log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+            for (int i = 0; i < playerItem.Length; i++)
+            {
+                //Debug.Log(playerItem[i]);
+            }
+
+            for (int i = 0; i < ItemImg.Length; i++)
+            {
+                
+                ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load(playerItem[i], typeof(Sprite)) as Sprite;
+                ItemImg[i].gameObject.SetActive(false);
+            }
+            ItemImg[0].gameObject.SetActive(true); //사용중인 아이템 이미지만 띄우기
+        }
+        else if (SceneManager.GetActiveScene().name == "Shop")
         {
-            playerItem[i] = ItemImg[i].GetComponent<Image>().sprite.name;
-            //Debug.Log(playerItem[i]);
+            for (int i = 0; i < ItemCompartmentBtn.Length; i++)
+            {
+                ItemCompartmentBtn[i].gameObject.SetActive(true);
+            }
+
+            LoadItemData();
+
+            for (int i = 0; i < ItemImg.Length; i++)
+            {
+                ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load(playerItem[i], typeof(Sprite)) as Sprite;
+            }
         }
-
-
-
+          
         itemCompartmentPosX[0] = 330;
         itemCompartmentPosX[1] = 190;
         itemCompartmentPosX[2] = 50;
         itemCompartmentPosX[3] = -90;
         itemCompartmentPosX[4] = -230;
-
-        //처음 시작은 하얀색 총알로만 시작
-        ItemImg[0].gameObject.GetComponent<Image>().sprite = Resources.Load("WhiteBullet", typeof(Sprite)) as Sprite;
-        playerItem[0] = ItemImg[0].gameObject.GetComponent<Image>().sprite.name;
     }
 
 
@@ -153,9 +181,41 @@ public class Item : MonoBehaviour
 
     public void OpneShop()
     {
-        Debug.Log("openShop 함수 작동 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+        //모든 데이터 Shop 이동 전에 저장하기
+        Player.instance.SaveHpData();
         TimeController.instance.SaveTimeData();
+        GameManager.instance.SaveGameData();
+        SaveItemData();
+
         SceneManager.LoadScene("Shop");     
     }
 
-}//End Class
+    public void SaveItemData()
+    {
+        for (int i = 0; i < playerItem.Length; i++)
+        {
+            //playerItem을 Item[i]에 저장
+            //Item0 Item1 Item2 Item3 Item4 Item5
+            PlayerPrefs.SetString("Item" + i.ToString(), playerItem[i]);
+            //Debug.Log("(playerItem)item[" + i + "] : " + playerItem[i]);
+            //Debug.Log("(playerprefs)item[" + i + "] : " + PlayerPrefs.GetString("Item" + i.ToString()));
+        }
+        PlayerPrefs.Save();
+    }
+
+    void LoadItemData()
+    {
+        for (int i = 0; i < playerItem.Length; i++)
+        {
+            if (!PlayerPrefs.HasKey("Item" + i.ToString())) //Item0 Item1 Item2 Item3 Item4 Item5 
+            {
+                playerItem[i] = PlayerPrefs.GetString("Item" + i.ToString(), ItemImg[i].GetComponent<Image>().sprite.name);
+            }
+            else
+            {
+                playerItem[i] = PlayerPrefs.GetString("Item" + i.ToString());
+            }        
+        }
+    }
+
+    }//End Class
