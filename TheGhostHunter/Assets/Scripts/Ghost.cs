@@ -4,28 +4,46 @@ using UnityEngine;
 
 public class Ghost : MonoBehaviour
 {
-    //프리팹
-    public GameObject PrefabGhost;
 
-    GameObject[] GhostObj = new GameObject[3];
+    public GameObject[] GhostObj = new GameObject[3];
+    public GameObject PurpleGhostObj;
+    public GameObject PurpleGhostAppearEffect;
+
     float[] ghostSpeed = new float[3];
     bool[] ghostMoving = new bool[3]; //Ghost가 움직일 수 있는지 
-    Vector3[] ghostResetPos = new Vector3[3];
-    int[] ghostColor = new int[3]; //0:하얀색 1:빨간색 2:파란색
 
+    Vector3[] ghostResetPos = new Vector3[3];
+    int[] ghostColor = new int[4]; //0:하얀색 1:빨간색 2:파란색 3:보라색
+
+    //보라색 유령
+    bool purpleGhostIsDead = false;
+
+    static public Ghost instance;
     private void Awake()
     {
+        instance = this;
+
         for (int i=0; i<3; i++)
         {
-            //유령 오브젝트
-            GhostObj[i] = null;
-
             //유령 움직임 
             ghostMoving[i] = true;
-
+           
             //유령 색깔
-            ghostColor[i] = 0;
+            if(TimeController.instance.limitTime >= 55)
+            {
+                ghostColor[i] = 0;
+            }
+            else
+            {
+                GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+            }
+            ghostColor[3] = 3; //보라색 유령
         }
+
+        //이미지 좌우 반전
+        GhostObj[0].GetComponent<SpriteRenderer>().flipX = true;
+        GhostObj[2].GetComponent<SpriteRenderer>().flipX = true;
+
 
         //유령 스피드
         //0.1
@@ -36,36 +54,27 @@ public class Ghost : MonoBehaviour
         //유령 재생성 위치
         ghostResetPos[0] = new Vector3(-3.5f, 3.5f, 0);
         ghostResetPos[1] = new Vector3(3.5f, 1, 0);
-        ghostResetPos[2] = new Vector3(-3.5f, -1.5f, 0);     
+        ghostResetPos[2] = new Vector3(-3.5f, -1.5f, 0);
+
+        //보라색 유령 초기 위치
+        PurpleGhostObj.transform.position = new Vector3(0, -5.5f, 0);
+
+        //보라색 유령 나타날 시 Effect
+        PurpleGhostAppearEffect.SetActive(false);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-       
-        MakeGhost();
+        Invoke("PurpleGhostAppearForTheFirstTime", 5); //게임 시작후 10초뒤 보라색 유령이 나오게 설정
     }
 
     // Update is called once per frame
     void Update()
     {
         MoveGhost();
+        ViewPurpleGhostWhtenItemCompartmentIsOpen();
         KillGhost();
-    }
-
-
-    void MakeGhost()
-    {
-        GhostObj[0] = Instantiate(PrefabGhost, new Vector3(-3.5f, 3.5f, 0), Quaternion.identity);
-        GhostObj[0].name = "Ghost1";
-        GhostObj[0].GetComponent<SpriteRenderer>().flipX = true;
-
-        GhostObj[1] = Instantiate(PrefabGhost, new Vector3(3.5f, 1, 0), Quaternion.identity);
-        GhostObj[1].name = "Ghost2";
-
-        GhostObj[2] = Instantiate(PrefabGhost, new Vector3(-3.5f, -1.5f, 0), Quaternion.identity);
-        GhostObj[2].name = "Ghost3";
-        GhostObj[2].GetComponent<SpriteRenderer>().flipX = true;
+        StopPurpleGhostCoroutine();
     }
 
     void MoveGhost()
@@ -89,7 +98,11 @@ public class Ghost : MonoBehaviour
                 if (GhostObj[i].transform.position.x <= -3.5)
                 {
                     ghostMoving[i] = false; //움직임을 멈춘다.
-                    GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+                    if (TimeController.instance.limitTime <= 55)
+                    {
+                        GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+                    }
+                   
                     GhostObj[i].transform.position = ghostResetPos[i];
                     SetRandomGhostSpeed(i);
                     StartCoroutine(ActivateGhostMoving(i));
@@ -100,7 +113,10 @@ public class Ghost : MonoBehaviour
                 if (GhostObj[i].transform.position.x >= 3.5)
                 {
                     ghostMoving[i] = false; //움직임을 멈춘다.
-                    GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+                    if (TimeController.instance.limitTime <= 55)
+                    {
+                        GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+                    }
                     GhostObj[i].transform.position = ghostResetPos[i];
                     SetRandomGhostSpeed(i);
                     StartCoroutine(ActivateGhostMoving(i)); 
@@ -109,7 +125,7 @@ public class Ghost : MonoBehaviour
         }    
     }
 
-    int SetRandomGhostTimeToAppear() //유령이 나타날 랜덤한 시간을 정한다.
+    int SetGhostRandomTimeToAppear() //유령이 나타날 랜덤한 시간을 정한다.
     {
         int ghostRandomTime;
         ghostRandomTime = Random.Range(1, 5); //1~4
@@ -119,7 +135,7 @@ public class Ghost : MonoBehaviour
     IEnumerator ActivateGhostMoving(int ghostNum) //유령의 움직임을 n초 후에 활성화시킨다.
     {
         int ghostRandTime;
-        ghostRandTime = SetRandomGhostTimeToAppear();
+        ghostRandTime = SetGhostRandomTimeToAppear();
         //Debug.Log("Ghost" + ghostNum + "이 " + ghostRandTime + "후에 재생성됩니다.");
         yield return new WaitForSeconds(ghostRandTime); 
 
@@ -234,6 +250,9 @@ public class Ghost : MonoBehaviour
             case "Ghost3":
                 ghostNum = 2;
                 break;
+            case "PurpleGhost":
+                ghostNum = 3;
+                break;
             default:
                 ghostNum = -1;
                 break;
@@ -245,8 +264,153 @@ public class Ghost : MonoBehaviour
 
     void ResetGhostAttribute(int ghostNum) //유령이 죽었을 시 유령의 속성값 변경
     {
-        GhostObj[ghostNum].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(ghostNum);
-        SetRandomGhostSpeed(ghostNum);
-        GhostObj[ghostNum].transform.position = ghostResetPos[ghostNum];
+        if (ghostNum == 3) //Purple Ghost
+        {
+            purpleGhostIsDead = true;
+            PurpleGhostAppearEffect.SetActive(false); 
+            PurpleGhostObj.transform.position = new Vector3(0, -5.5f, 0); //화면 바깥으로 사라지도록 한다.
+        }
+        else
+        {
+            if (TimeController.instance.limitTime <= 55)
+            {
+                GhostObj[ghostNum].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(ghostNum);
+            }
+
+            SetRandomGhostSpeed(ghostNum);
+            GhostObj[ghostNum].transform.position = ghostResetPos[ghostNum];
+        }       
     }
+
+    //Purple Ghost - 플레이어의 아이템을 뺏는 유령
+    //플레이어가 아이템 창을 열어놓을 경우 - 모든 아이템 창에서 나타남 -> 일단 구현 완료
+    //플레이어가 아이템 창을 닫아 놓을 경우 - 사용중인 아이템 주변에 보라색 빛이 발생 -> 이후 랜덤 아이템 위치 칸에 등장.
+    //Item.instance.usingItemBtn 을 통해 열렸을 경우를 확인한다.
+
+    int SetPurpleGhostRandomPos()
+    {
+        int randomIndex;
+        float[] ghostRandomPosSet = new float[6];
+
+        ghostRandomPosSet[5] = -1.15f;
+        ghostRandomPosSet[4] = -0.45f;
+        ghostRandomPosSet[3] =  0.3f;
+        ghostRandomPosSet[2] =  1f;
+        ghostRandomPosSet[1] =  1.7f;
+        ghostRandomPosSet[0] =  2.4f;
+
+       
+        randomIndex = Random.Range(0, 6); //0~5
+        while (Item.instance.playerItem[randomIndex] == "empty") //아이템이 존재하는 칸에만 Purple Ghost가 나타나게 함.
+        {
+            randomIndex = Random.Range(0, 6);
+        }
+
+
+
+        if (Item.instance.itemBtnBV == true && randomIndex != 0) //아이템 창이 닫혀있을 경우
+        {
+            //아이템 창이 닫혀있는 경우에만 보라색 이펙트 사용
+            ViewPurpleGhostAppearEffect(true);
+            PurpleGhostObj.SetActive(false);
+        }
+       
+        
+        PurpleGhostObj.transform.position = new Vector3(ghostRandomPosSet[randomIndex], -4.3f, 0);
+        return randomIndex;
+    }
+
+    void PurpleGhostAppearForTheFirstTime()
+    {
+        StartCoroutine("AppearPurpleGhost");
+    }
+
+    IEnumerator AppearPurpleGhost() //게임이 종료될때까지 계속 코루틴이 돌아가도록 한다
+    {
+        int randomPosIndex;
+        Debug.Log("AppearPurpleGhost 코루틴 동작 시작");
+        randomPosIndex = SetPurpleGhostRandomPos();
+
+        yield return new WaitForSeconds(2); //Purple Ghost가 2초후에 모습이 사라지도록 한다.
+          
+        ViewPurpleGhostAppearEffect(false);
+        StealItem(randomPosIndex);
+        PurpleGhostObj.transform.position = new Vector3(0, -5.5f, 0); //화면 바깥으로 사라지도록 한다.
+        Debug.Log("AppearPurpleGhost 코루틴 동작 끝");
+        StartCoroutine("SetPurpleGhostRandomTimeToAppear");           
+    }
+
+    IEnumerator SetPurpleGhostRandomTimeToAppear() //Purple Ghost가 나타나는 랜덤한 시간 관리
+    {
+        Debug.Log("SetPurpleGhostRandomTimeToAppear 코루틴 동작 시작");
+        int ghostRandomTime;
+        ghostRandomTime = Random.Range(3, 5); //5~10
+        Debug.Log(ghostRandomTime + "초 뒤에 Purple Ghost 출현");
+
+        yield return new WaitForSeconds(ghostRandomTime);
+
+        Debug.Log("SetPurpleGhostRandomTimeToAppear 코루틴 동작 끝");
+        StartCoroutine("AppearPurpleGhost");              
+    }
+
+    //아이템 창이 닫혀있다가 보라색 유령이 나타날 경우 아이템 창을 열때 보라색 유령의 이미지 활성화
+    //update 함수에서 계속 확인해야함.
+    void CheckUsingItemBtnAndPurpleGhost()
+    {
+        if(Item.instance.itemBtnBV != false) //아이템 창이 닫혀있을 경우
+        {
+            if(PurpleGhostObj.transform.position.y >-5.5) //화면에 나타났을 경우
+            {
+                //현재 PurpleGhost의 이미지는 비활성화 되어있다라고 가정
+
+
+            }
+            //아이템 창이 다 열린 뒤 보라색 유령을 보여준다.
+        }
+    }
+
+
+    void ViewPurpleGhostAppearEffect(bool PurpleGhostAppearBV) //파라미터 : PurpleGHostAppear Bool Value
+    {
+        PurpleGhostAppearEffect.SetActive(PurpleGhostAppearBV);
+    }
+
+
+    void StopPurpleGhostCoroutine()
+    {
+        int ghostRandomTime;
+        
+        if (purpleGhostIsDead == true)
+        {
+            //stopCououtine은 String으로 호출하면 String으로 멈춰야한다.
+            //함수호출하듯이 코루틴을 호출했을 경우 코루틴 멈추지 않아 string으로 호출로 진행함.
+            StopCoroutine("AppearPurpleGhost"); 
+            StopCoroutine("SetPurpleGhostRandomTimeToAppear");
+            purpleGhostIsDead = false;
+            Debug.Log("보라색 유령 사망");
+            ghostRandomTime = Random.Range(3, 5);
+            Invoke("PurpleGhostAppearForTheFirstTime", ghostRandomTime);
+        }
+    }
+
+    void StealItem(int posIndex)
+    {
+        Item.instance.ItemImg[posIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        Item.instance.playerItem[posIndex] = "empty";
+    }
+
+    void ViewPurpleGhostWhtenItemCompartmentIsOpen() //아이템 창이 열려있을때 PurpleGhost를 보여준다.
+    {
+        //아이템 창이 열려있을 경우 + Purple Ghost가 아이템 창에 나타나있을경우
+        if (Item.instance.itemBtnBV == false && PurpleGhostObj.transform.position.y > -5) 
+        {
+            //Debug.Log("아이템 창이 열려있을 경우 + Purple Ghost가 아이템 창에 나타나있을경우");
+            PurpleGhostObj.SetActive(true);
+        }
+        //1. 아이템 창이 닫혀있는 상태에서 보라색 유령 등장 이펙트 뜸
+        //2. 이후 아이템 창을 열음
+        //3. 보라색 유령을 죽이거나 사라질때까지 아이템 창을 닫지 못하게 함.
+        //이를 item Class에서 제어함
+    }
+
 }//End Class

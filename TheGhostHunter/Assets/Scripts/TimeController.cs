@@ -7,7 +7,8 @@ public class TimeController : MonoBehaviour
 {
     public Text TimeText;
 
-    float limitTime = 60;
+    [HideInInspector]
+    public float limitTime = 60;
 
     static public TimeController instance;
     private void Awake()
@@ -29,7 +30,7 @@ public class TimeController : MonoBehaviour
     {
         if(limitTime <=0) //제한시간 종료
         {
-            //Debug.Log("제한 시간 종료");
+            Debug.Log("제한 시간 종료");
         }
     }
 

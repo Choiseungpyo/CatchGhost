@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [HideInInspector]
-    string gameStart = "true"; //playerPrefs 대신 static을 이용하여 다른씬으로 이동했다 와도 데이터 저장되어 있게함
+    public string gameStart = "true"; //playerPrefs 대신 static을 이용하여 다른씬으로 이동했다 와도 데이터 저장되어 있게함
     static string gameStartCopy = "true";
 
     static public GameManager instance;
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Reset");
         }
         gameStartCopy = "false";
-        gameStartCopy = gameStart;
+        gameStart = gameStartCopy;
     }
 
     public void SaveGameData()

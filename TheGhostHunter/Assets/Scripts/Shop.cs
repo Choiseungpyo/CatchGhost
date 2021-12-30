@@ -39,6 +39,7 @@ public class Shop : MonoBehaviour
         shopItem[0,0] = "WhiteBullet";
         shopItem[1,0] = "RedBullet";
         shopItem[2,0] = "BlueBullet";
+        shopItem[3,0] = "PurpleBullet";
     }
 
     private void Update()

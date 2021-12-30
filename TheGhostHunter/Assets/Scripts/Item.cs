@@ -12,10 +12,10 @@ public class Item : MonoBehaviour
 
     int[] itemCompartmentPosX = new int[5];
 
-    bool itemBtnBV = true; //itemBtn Bool value
+    [HideInInspector]
+    public bool itemBtnBV = true; //itemBtn Bool value
     [HideInInspector]
     public string[] playerItem = new string[6]; //플레이어 아이템칸 총 6개 (사용:1 보관:5), UI에서는 우에서 좌순서이다.
-
 
     bool usingItemBtn = false;
 
@@ -31,21 +31,8 @@ public class Item : MonoBehaviour
                 ItemCompartmentBtn[i].gameObject.SetActive(false);
             }
 
-            //for (int i = 0; i < playerItem.Length; i++)
-            //{
-            //    playerItem[i] = ItemImg[i].GetComponent<Image>().sprite.name;           
-            //}
-
-            //처음 시작은 하얀색 총알로만 시작
-            //ItemImg[0].gameObject.GetComponent<Image>().sprite = Resources.Load("WhiteBullet", typeof(Sprite)) as Sprite;
-            //playerItem[0] = ItemImg[0].gameObject.GetComponent<Image>().sprite.name;
-
             LoadItemData();
-            //Debug.Log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-            for (int i = 0; i < playerItem.Length; i++)
-            {
-                //Debug.Log(playerItem[i]);
-            }
+
 
             for (int i = 0; i < ItemImg.Length; i++)
             {
@@ -83,18 +70,25 @@ public class Item : MonoBehaviour
         if(usingItemBtn == false)
         {
             usingItemBtn = true;
-            if (itemBtnBV == true)
+            if (itemBtnBV == true) //아이템 창 열기
             {
                 itemBtnBV = false;
                 //UI는 transform.localPosition으로 위치를 변경한다.
                 StartCoroutine(OpenItemComaprtmentEffect());
-            }
-            else
+            }           
+            else if (itemBtnBV == false)
             {
-                itemBtnBV = true;
-                StartCoroutine(CloseItemComaprtmentEffect());
+                if(Ghost.instance.PurpleGhostObj.transform.position.y < -5)
+                {
+                    itemBtnBV = true;
+                    StartCoroutine(CloseItemComaprtmentEffect());
+                }
+                else
+                {
+                    usingItemBtn = false;
+                }
             }
-        } 
+        }
     }
 
     IEnumerator OpenItemComaprtmentEffect() //아이템 창을 우->좌로 열리는 효과
@@ -142,8 +136,11 @@ public class Item : MonoBehaviour
             case "RedBullet":
                 colorNum = 1;
                 break;
-            case "BuleBullet":
+            case "BlueBullet":
                 colorNum = 2;
+                break;
+            case "PurpleBullet":
+                colorNum = 3;
                 break;
             default:
                 colorNum = -1; 
@@ -160,20 +157,21 @@ public class Item : MonoBehaviour
 
         if (usingItemBtn == false)
         {        
-            //Debug.Log(clickedBtn.name);
             for(int i=0; i<5; i++)
             {
                 if(clickedBtn.name.Contains((i+1).ToString())) //1,2,3,4,5
                 {
-                    Debug.Log("클릭한 버튼 :" + (i+1));
-                    //Debug.Log(clickedBtn.GetComponent<Image>().sprite);
-                    tmpSprite = ItemImg[i + 1].GetComponent<Image>().sprite;
-                    ItemImg[i+1].GetComponent<Image>().sprite = ItemImg[0].sprite;
-                    ItemImg[0].gameObject.GetComponent<Image>().sprite = tmpSprite;
+                    //Debug.Log("클릭한 버튼 :" + (i+1));
+                    if(ItemImg[i + 1].GetComponent<Image>().sprite.name != "empty") //비어있는 아이템과는 바꿔지지 않게 함
+                    {
+                        tmpSprite = ItemImg[i + 1].GetComponent<Image>().sprite;
+                        ItemImg[i + 1].GetComponent<Image>().sprite = ItemImg[0].sprite;
+                        ItemImg[0].gameObject.GetComponent<Image>().sprite = tmpSprite;
 
-                    tmpItemName = playerItem[i+1];
-                    playerItem[i + 1] = playerItem[0];
-                    playerItem[0] = tmpItemName;
+                        tmpItemName = playerItem[i + 1];
+                        playerItem[i + 1] = playerItem[0];
+                        playerItem[0] = tmpItemName;
+                    }            
                 }           
             }
         }
@@ -217,5 +215,7 @@ public class Item : MonoBehaviour
             }        
         }
     }
+
+    
 
     }//End Class
