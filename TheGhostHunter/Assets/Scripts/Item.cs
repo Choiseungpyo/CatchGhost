@@ -19,11 +19,35 @@ public class Item : MonoBehaviour
 
     bool usingItemBtn = false;
 
+    //총알을 제외한 아이템 사용 관련
+    static int usingItemIndex;
+    
+
+    //Reduce Ghost Speed
+    [HideInInspector]
+    public  bool usingItemRGS = false;
+    static float timeToUseRGS = 7; //Scene 이동시에도 아이템 사용시간은 흘러가게 만들기 위해 static 이용
+    static int usingItemRGSIndex;
+
+    //Increase Ghost Price
+    static bool usingItemIGP= false;
+    static float timeToUseIGP = 10; //Scene 이동시에도 아이템 사용시간은 흘러가게 만들기 위해 static 이용
+    static int usingItemIGPIndex;
+
+
+
+
+
+    //Shop Class에서 선언하고 사용하려했지만 데이터 저장때문에 여기서 선언
+    [HideInInspector]
+    public int coin = 10000;
+
     static public Item instance;
     private void Awake()
     {
         instance = this;
-
+        LoadCoinData();
+        LoadUsingItemData();
         if (SceneManager.GetActiveScene().name == "Main")
         {
             for (int i = 0; i < ItemCompartmentBtn.Length; i++)
@@ -33,10 +57,8 @@ public class Item : MonoBehaviour
 
             LoadItemData();
 
-
             for (int i = 0; i < ItemImg.Length; i++)
-            {
-                
+            {           
                 ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load(playerItem[i], typeof(Sprite)) as Sprite;
                 ItemImg[i].gameObject.SetActive(false);
             }
@@ -64,6 +86,11 @@ public class Item : MonoBehaviour
         itemCompartmentPosX[4] = -230;
     }
 
+    private void Update()
+    {
+        CalculateTimeToRGS();
+        CalculateTimeToIGP();
+    }
 
     public void OpenItemCompartmentBtn() //UsingItem 버튼을 누르면 아이템 창을 연다.
     {
@@ -161,9 +188,10 @@ public class Item : MonoBehaviour
             {
                 if(clickedBtn.name.Contains((i+1).ToString())) //1,2,3,4,5
                 {
-                    //Debug.Log("클릭한 버튼 :" + (i+1));
-                    if(ItemImg[i + 1].GetComponent<Image>().sprite.name != "empty") //비어있는 아이템과는 바꿔지지 않게 함
+                    //총알인 아이템과만 바뀌도록.
+                    if (ItemImg[i + 1].GetComponent<Image>().sprite.name.Contains("Bullet"))
                     {
+                        Debug.Log("아이템이 바뀌었습니다.");
                         tmpSprite = ItemImg[i + 1].GetComponent<Image>().sprite;
                         ItemImg[i + 1].GetComponent<Image>().sprite = ItemImg[0].sprite;
                         ItemImg[0].gameObject.GetComponent<Image>().sprite = tmpSprite;
@@ -179,13 +207,189 @@ public class Item : MonoBehaviour
 
     public void OpneShop()
     {
-        //모든 데이터 Shop 이동 전에 저장하기
-        Player.instance.SaveHpData();
-        TimeController.instance.SaveTimeData();
-        GameManager.instance.SaveGameData();
-        SaveItemData();
+        if(Ghost.instance.PurpleGhostObj.transform.position.y < -5) //Purple Ghost가 나타나 있지 않아야한다.
+        {
+            //모든 데이터 Shop 이동 전에 저장하기
+            Player.instance.SaveHpData();
+            TimeController.instance.SaveTimeData();
+            SaveCoinData();
+            GameManager.instance.SaveGameData();
+            SaveItemData();
+            SaveUsingItemRGSData();
 
-        SceneManager.LoadScene("Shop");     
+            SceneManager.LoadScene("Shop");
+        }      
+    }
+
+   
+
+    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    //아이템 동작 함수(1.유령 스피드 감소 2.시간 증가 3.힐팩 4.더블 코인)
+    void ReduceGhostSpeed() //7초동안 유령의 스피드를 낮춤.
+    {
+        Debug.Log("Reduce Ghost Speed 사용");
+        usingItemRGS = true;
+    }
+
+    void CalculateTimeToRGS()
+    {
+        if (usingItemRGS == true)
+        {
+            timeToUseRGS -= Time.deltaTime;
+
+            if (timeToUseRGS <= 0)
+            {
+                usingItemRGS = false;
+                timeToUseRGS = 7;
+                ItemImg[usingItemRGSIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+                playerItem[usingItemRGSIndex] = "empty";
+                Debug.Log("Ruduce Ghost Price 사용 종료");
+            }
+
+            //Debug.Log("timeToUseRGS : " + timeToUseRGS);
+        }
+    }
+
+    void IncreaseTime()
+    {
+        Debug.Log("Increase Time");
+        TimeController.instance.limitTime += 10;
+        ItemImg[usingItemIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        playerItem[usingItemIndex] = "empty";
+    }
+
+    void IncreaseHp()
+    {
+        Debug.Log("Heal Pack 사용");
+        Player.instance.hp += 1;
+        ItemImg[usingItemIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        playerItem[usingItemIndex] = "empty";
+    }
+
+    void IncreaseGhostPrice()
+    {
+        Debug.Log("Increase Ghost Price");
+        usingItemIGP = true;
+        Debug.Log("ReduceGhostSpeed");
+        Ghost.instance.ghostPrice = 200;
+    }
+
+    void CalculateTimeToIGP() //IncreaseGhostPrice = IGP
+    {
+        if (usingItemIGP == true)
+        {
+            timeToUseIGP -= Time.deltaTime;
+
+            if (timeToUseIGP <= 0)
+            {
+                usingItemIGP = false;
+                timeToUseIGP = 10;
+                ItemImg[usingItemIGPIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+                playerItem[usingItemIGPIndex] = "empty";
+                Ghost.instance.ghostPrice = 100;
+                Debug.Log("Increase Ghost price 사용 종료");
+            }
+
+            //Debug.Log("timeToUseRGS : " + timeToUseIGP);
+        }
+    }
+
+
+
+
+    public void CheckItemIWantToUse() //총알을 제외한 아이템을 사용하기 위해 해당 아이템의 버튼을 클릭할 경우
+    {
+        GameObject clickedBtn = EventSystem.current.currentSelectedGameObject;
+
+        if (usingItemBtn == false)
+        {
+            for (int i =1 ; i <= 5; i++)
+            {
+                if (clickedBtn.name.Contains(i.ToString())) //1,2,3,4,5
+                {
+                    usingItemIndex = i;
+                    UseItemOtherThanBullet();
+                    break;
+                }
+            } 
+        }
+    }
+
+    void UseItemOtherThanBullet() //총알을 제외한 아이템을 사용한다.
+    {
+        switch(ItemImg[usingItemIndex].GetComponent<Image>().sprite.name)
+        {
+            case "ReduceGhostSpeed":
+                if(usingItemRGS == false) //사용중이 아닌 경우
+                {
+                    //나중에 효과 넣기 
+                    //사용중인 경우 사용중이라는 Effect 띄우기
+                    usingItemRGSIndex = usingItemIndex;
+                    ReduceGhostSpeed();
+                }
+
+                break;
+            case "IncreaseTime":
+                    IncreaseTime();      
+                break;
+            case "HealPack":
+                if (Player.instance.hp <= 2) //Hp가 닳아있는 상태만 HealPack사용가능하게 함.
+                {
+                    IncreaseHp();
+                }
+                break;
+            case "DoubleCoin":
+                if (usingItemIGP == false) //사용중이 아닌 경우
+                {
+                    //나중에 효과 넣기 
+                    //사용중인 경우 사용중이라는 Effect 띄우기
+                    usingItemIGPIndex = usingItemIndex;
+                    IncreaseGhostPrice();
+                }             
+                break;
+        }
+    }
+
+
+
+    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    //정보 저장 및 로드 함수
+
+    public void SaveCoinData()
+    {
+        PlayerPrefs.SetInt("Coin", coin);
+        PlayerPrefs.Save();
+    }
+
+    void LoadCoinData()
+    {
+        if (!PlayerPrefs.HasKey("Coin"))
+        {
+            coin = PlayerPrefs.GetInt("Coin", 10000);
+        }
+        else
+        {
+            coin = PlayerPrefs.GetInt("Coin");
+        }
+    }
+
+    public void SaveUsingItemRGSData()
+    {
+        PlayerPrefs.SetString("UsingItemRGS", usingItemRGS.ToString());
+        PlayerPrefs.Save();
+    }
+
+    void LoadUsingItemData()
+    {
+        if (!PlayerPrefs.HasKey("UsingItemRGS"))
+        {
+            Debug.Log("usingItemRGS 초기화 x");
+            usingItemRGS = bool.Parse(PlayerPrefs.GetString("UsingItemRGS", "false"));
+        }
+        else
+        {
+            usingItemRGS = bool.Parse(PlayerPrefs.GetString("UsingItemRGS"));
+        }
     }
 
     public void SaveItemData()
@@ -212,10 +416,7 @@ public class Item : MonoBehaviour
             else
             {
                 playerItem[i] = PlayerPrefs.GetString("Item" + i.ToString());
-            }        
+            }
         }
     }
-
-    
-
-    }//End Class
+}//End Class

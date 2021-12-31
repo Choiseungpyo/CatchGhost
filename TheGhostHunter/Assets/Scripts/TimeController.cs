@@ -22,17 +22,9 @@ public class TimeController : MonoBehaviour
     {
         limitTime -= Time.deltaTime;
         TimeText.text = Mathf.Round(limitTime).ToString();
-        CheckTime();
     }
 
 
-    void CheckTime()
-    {
-        if(limitTime <=0) //제한시간 종료
-        {
-            Debug.Log("제한 시간 종료");
-        }
-    }
 
     public void SaveTimeData()
     {

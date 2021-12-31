@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Player : MonoBehaviour
 {
     [HideInInspector]
@@ -22,16 +23,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         SetPlayerHpUI();
-        CheckPlayerHp();       
-    }
-
-
-    void CheckPlayerHp() //플레이어의 Hp 확인
-    {
-        if (hp <= 0)
-        {
-            Debug.Log("Hp <=0 : 게임 종료");
-        }
+           
     }
 
     void SetPlayerHpUI()

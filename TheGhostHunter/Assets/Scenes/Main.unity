@@ -553,6 +553,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 369392965}
+        m_MethodName: CheckItemIWantToUse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &369392964
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,6 +616,7 @@ MonoBehaviour:
   - 
   - 
   - 
+  coin: 10000
 --- !u!4 &369392966
 Transform:
   m_ObjectHideFlags: 0
@@ -941,6 +953,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 369392965}
+        m_MethodName: CheckItemIWantToUse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &562549727
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,6 +1093,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 369392965}
+        m_MethodName: CheckItemIWantToUse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &601576831
 GameObject:
   m_ObjectHideFlags: 0
@@ -1134,6 +1168,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 369392965}
         m_MethodName: ExchangeItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 369392965}
+        m_MethodName: CheckItemIWantToUse
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1382,6 +1427,7 @@ MonoBehaviour:
   - {fileID: 3317276134216924910}
   PurpleGhostObj: {fileID: 6909873057957150711}
   PurpleGhostAppearEffect: {fileID: 2089196465}
+  ghostPrice: 100
 --- !u!4 &1172013782
 Transform:
   m_ObjectHideFlags: 0
@@ -1762,6 +1808,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 369392965}
         m_MethodName: ExchangeItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 369392965}
+        m_MethodName: CheckItemIWantToUse
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
