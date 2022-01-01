@@ -570,7 +570,7 @@ public class Ghost : MonoBehaviour
     IEnumerator SetPurpleGhostRandomTimeToAppear() //Purple Ghost가 나타나는 랜덤한 시간 관리
     {
         int ghostRandomTime;
-        ghostRandomTime = Random.Range(3, 5); //10~15
+        ghostRandomTime = Random.Range(8, 13); //8~12
         Debug.Log(ghostRandomTime + "초 뒤에 Purple Ghost 출현");
 
         yield return new WaitForSeconds(ghostRandomTime);

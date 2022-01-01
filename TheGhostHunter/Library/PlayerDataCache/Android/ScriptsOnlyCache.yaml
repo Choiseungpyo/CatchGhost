@@ -1,6 +1,7 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - CameraResolution
     - EndingSceneManager
     - GameManager
     - Ghost
@@ -56,23 +57,25 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 15586}
+      Script: {instanceID: 11336}
     - Class: 114
-      Script: {instanceID: 15878}
+      Script: {instanceID: 11630}
     - Class: 114
-      Script: {instanceID: 15898}
+      Script: {instanceID: 11650}
     - Class: 114
-      Script: {instanceID: 15934}
+      Script: {instanceID: 11686}
     - Class: 114
-      Script: {instanceID: 16602}
+      Script: {instanceID: 11906}
     - Class: 114
-      Script: {instanceID: 16992}
+      Script: {instanceID: 12366}
     - Class: 114
-      Script: {instanceID: 17332}
+      Script: {instanceID: 12762}
     - Class: 114
-      Script: {instanceID: 18108}
+      Script: {instanceID: 13102}
     - Class: 114
-      Script: {instanceID: 18722}
+      Script: {instanceID: 13894}
+    - Class: 114
+      Script: {instanceID: 14514}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -109,29 +112,31 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 15586}
+      Script: {instanceID: 11336}
     - Class: 114
-      Script: {instanceID: 15836}
+      Script: {instanceID: 11588}
     - Class: 114
-      Script: {instanceID: 15878}
+      Script: {instanceID: 11630}
     - Class: 114
-      Script: {instanceID: 15934}
+      Script: {instanceID: 11686}
     - Class: 114
-      Script: {instanceID: 16602}
+      Script: {instanceID: 11906}
     - Class: 114
-      Script: {instanceID: 16864}
+      Script: {instanceID: 12366}
     - Class: 114
-      Script: {instanceID: 16940}
+      Script: {instanceID: 12634}
     - Class: 114
-      Script: {instanceID: 16992}
+      Script: {instanceID: 12710}
     - Class: 114
-      Script: {instanceID: 17332}
+      Script: {instanceID: 12762}
     - Class: 114
-      Script: {instanceID: 17798}
+      Script: {instanceID: 13102}
     - Class: 114
-      Script: {instanceID: 18108}
+      Script: {instanceID: 13580}
     - Class: 114
-      Script: {instanceID: 18722}
+      Script: {instanceID: 13894}
+    - Class: 114
+      Script: {instanceID: 14514}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -168,23 +173,25 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 15586}
+      Script: {instanceID: 11336}
     - Class: 114
-      Script: {instanceID: 15878}
+      Script: {instanceID: 11630}
     - Class: 114
-      Script: {instanceID: 15934}
+      Script: {instanceID: 11686}
     - Class: 114
-      Script: {instanceID: 16602}
+      Script: {instanceID: 11906}
     - Class: 114
-      Script: {instanceID: 16864}
+      Script: {instanceID: 12366}
     - Class: 114
-      Script: {instanceID: 17332}
+      Script: {instanceID: 12634}
     - Class: 114
-      Script: {instanceID: 17852}
+      Script: {instanceID: 13102}
     - Class: 114
-      Script: {instanceID: 18108}
+      Script: {instanceID: 13634}
     - Class: 114
-      Script: {instanceID: 18722}
+      Script: {instanceID: 13894}
+    - Class: 114
+      Script: {instanceID: 14514}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -223,19 +230,21 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 15586}
+      Script: {instanceID: 11336}
     - Class: 114
-      Script: {instanceID: 15878}
+      Script: {instanceID: 11630}
     - Class: 114
-      Script: {instanceID: 16208}
+      Script: {instanceID: 11906}
     - Class: 114
-      Script: {instanceID: 16602}
+      Script: {instanceID: 11966}
     - Class: 114
-      Script: {instanceID: 16992}
+      Script: {instanceID: 12366}
     - Class: 114
-      Script: {instanceID: 18108}
+      Script: {instanceID: 12762}
     - Class: 114
-      Script: {instanceID: 18722}
+      Script: {instanceID: 13894}
+    - Class: 114
+      Script: {instanceID: 14514}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -399,6 +408,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.EventSystems
     className: PhysicsRaycaster
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: CameraResolution
   - hash:
       serializedVersion: 2
       Hash: 2222ff1e3c3dda74d066b183f0ff2bd6
