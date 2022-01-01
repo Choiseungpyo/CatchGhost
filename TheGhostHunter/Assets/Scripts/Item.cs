@@ -10,6 +10,7 @@ public class Item : MonoBehaviour
     public Button[] ItemCompartmentBtn = new Button[5];
     public Image[] ItemImg = new Image[6];
 
+    
     int[] itemCompartmentPosX = new int[5];
 
     [HideInInspector]
@@ -33,10 +34,6 @@ public class Item : MonoBehaviour
     static bool usingItemIGP= false;
     static float timeToUseIGP = 10; //Scene 이동시에도 아이템 사용시간은 흘러가게 만들기 위해 static 이용
     static int usingItemIGPIndex;
-
-
-
-
 
     //Shop Class에서 선언하고 사용하려했지만 데이터 저장때문에 여기서 선언
     [HideInInspector]
@@ -79,11 +76,11 @@ public class Item : MonoBehaviour
             }
         }
           
-        itemCompartmentPosX[0] = 330;
-        itemCompartmentPosX[1] = 190;
-        itemCompartmentPosX[2] = 50;
+        itemCompartmentPosX[0] = 570;
+        itemCompartmentPosX[1] = 350;
+        itemCompartmentPosX[2] = 130;
         itemCompartmentPosX[3] = -90;
-        itemCompartmentPosX[4] = -230;
+        itemCompartmentPosX[4] = -310;
     }
 
     private void Update()
@@ -126,8 +123,8 @@ public class Item : MonoBehaviour
             ItemImg[i+1].gameObject.SetActive(true);
             while (ItemCompartmentBtn[i].transform.localPosition.x > itemCompartmentPosX[i])
             {
-                ItemCompartmentBtn[i].transform.localPosition += new Vector3(-70, 0, 0);
-                ItemImg[i+1].transform.localPosition += new Vector3(-70, 0, 0);
+                ItemCompartmentBtn[i].transform.localPosition += new Vector3(-220, 0, 0);
+                ItemImg[i+1].transform.localPosition += new Vector3(-220, 0, 0);
                 yield return new WaitForSeconds(0.005f);
             }
         }
@@ -138,11 +135,11 @@ public class Item : MonoBehaviour
     {
         for (int i = 4; i >= 0; i--)
         {
-            while (ItemCompartmentBtn[i].transform.localPosition.x < itemCompartmentPosX[i] + 140)
+            while (ItemCompartmentBtn[i].transform.localPosition.x < itemCompartmentPosX[i] + 220)
             {
-                ItemCompartmentBtn[i].transform.localPosition += new Vector3(+70, 0, 0);
-                ItemImg[i + 1].transform.localPosition += new Vector3(+70, 0, 0);
-                yield return new WaitForSeconds(0.005f);
+                ItemCompartmentBtn[i].transform.localPosition += new Vector3(+220, 0, 0);
+                ItemImg[i + 1].transform.localPosition += new Vector3(+220, 0, 0);
+                yield return new WaitForSeconds(0.05f);
             }
             ItemCompartmentBtn[i].gameObject.SetActive(false);
             ItemImg[i+1].gameObject.SetActive(false);
@@ -191,7 +188,7 @@ public class Item : MonoBehaviour
                     //총알인 아이템과만 바뀌도록.
                     if (ItemImg[i + 1].GetComponent<Image>().sprite.name.Contains("Bullet"))
                     {
-                        Debug.Log("아이템이 바뀌었습니다.");
+                        //Debug.Log("아이템이 바뀌었습니다.");
                         tmpSprite = ItemImg[i + 1].GetComponent<Image>().sprite;
                         ItemImg[i + 1].GetComponent<Image>().sprite = ItemImg[0].sprite;
                         ItemImg[0].gameObject.GetComponent<Image>().sprite = tmpSprite;
@@ -216,6 +213,7 @@ public class Item : MonoBehaviour
             GameManager.instance.SaveGameData();
             SaveItemData();
             SaveUsingItemRGSData();
+            Ghost.instance.SaveKilledGhostCntData();
 
             SceneManager.LoadScene("Shop");
         }      
@@ -257,7 +255,6 @@ public class Item : MonoBehaviour
         ItemImg[usingItemIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
         playerItem[usingItemIndex] = "empty";
     }
-
     void IncreaseHp()
     {
         Debug.Log("Heal Pack 사용");
@@ -273,7 +270,6 @@ public class Item : MonoBehaviour
         Debug.Log("ReduceGhostSpeed");
         Ghost.instance.ghostPrice = 200;
     }
-
     void CalculateTimeToIGP() //IncreaseGhostPrice = IGP
     {
         if (usingItemIGP == true)
@@ -293,9 +289,6 @@ public class Item : MonoBehaviour
             //Debug.Log("timeToUseRGS : " + timeToUseIGP);
         }
     }
-
-
-
 
     public void CheckItemIWantToUse() //총알을 제외한 아이템을 사용하기 위해 해당 아이템의 버튼을 클릭할 경우
     {
@@ -365,7 +358,7 @@ public class Item : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("Coin"))
         {
-            coin = PlayerPrefs.GetInt("Coin", 10000);
+            coin = PlayerPrefs.GetInt("Coin", 0);
         }
         else
         {
@@ -399,8 +392,6 @@ public class Item : MonoBehaviour
             //playerItem을 Item[i]에 저장
             //Item0 Item1 Item2 Item3 Item4 Item5
             PlayerPrefs.SetString("Item" + i.ToString(), playerItem[i]);
-            //Debug.Log("(playerItem)item[" + i + "] : " + playerItem[i]);
-            //Debug.Log("(playerprefs)item[" + i + "] : " + PlayerPrefs.GetString("Item" + i.ToString()));
         }
         PlayerPrefs.Save();
     }

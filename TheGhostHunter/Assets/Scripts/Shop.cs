@@ -36,21 +36,30 @@ public class Shop : MonoBehaviour
             {
                 if(col ==1)
                 {
-                    shopItem[row, col] = "500";
+                    shopItem[row, col] = "300";
                 }
                 else
                 {
                     shopItem[row, col] = "empty";
-                }               
+                }
             }
         }
-        
-        shopItem[0,0] = "WhiteBullet";
-        shopItem[1,0] = "RedBullet";
-        shopItem[2,0] = "BlueBullet";
-        shopItem[3,0] = "PurpleBullet";
-        shopItem[3, 1] = "700";
 
+        shopItem[0, 0] = "WhiteBullet";
+        shopItem[1, 0] = "RedBullet";
+        shopItem[2, 0] = "BlueBullet";
+        shopItem[3, 0] = "PurpleBullet";
+
+        shopItem[0, 1] = "300";
+        shopItem[1, 1] = "300";
+        shopItem[2, 1] = "300";
+        shopItem[3, 1] = "500";
+
+        for(int i =0; i<4; i++)
+        {
+            ItemPriceTxt[i].text = shopItem[i, 1];
+        }
+       
         PreviousPageBtn.SetActive(false);
         NextPageBtn.SetActive(true);
     }
@@ -61,7 +70,6 @@ public class Shop : MonoBehaviour
         {
             CoinText.text = Item.instance.coin.ToString();
         }
-        //Debug.Log("Shop Time Data : " + PlayerPrefs.GetFloat("Time"));
     }
 
     //Open Shop은 Item Class에서 진행
@@ -115,10 +123,10 @@ public class Shop : MonoBehaviour
             shopItem[2, 0] = "BlueBullet";
             shopItem[3, 0] = "PurpleBullet";
             
-            shopItem[0, 1] = "500";
-            shopItem[1, 1] = "500";
-            shopItem[2, 1] = "500";
-            shopItem[3, 1] = "700";
+            shopItem[0, 1] = "300";
+            shopItem[1, 1] = "300";
+            shopItem[2, 1] = "300";
+            shopItem[3, 1] = "500";
         }
         else if(page == 2)
         {
@@ -127,10 +135,10 @@ public class Shop : MonoBehaviour
             shopItem[2, 0] = "HealPack";
             shopItem[3, 0] = "DoubleCoin";
 
-            shopItem[0, 1] = "500";
-            shopItem[1, 1] = "500";
-            shopItem[2, 1] = "700";
-            shopItem[3, 1] = "500";
+            shopItem[0, 1] = "300";
+            shopItem[1, 1] = "300";
+            shopItem[2, 1] = "500";
+            shopItem[3, 1] = "300";
         }
 
         for (int i = 0; i < ItemPriceTxt.Length; i++)

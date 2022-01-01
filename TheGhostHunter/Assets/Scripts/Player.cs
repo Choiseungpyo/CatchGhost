@@ -23,18 +23,17 @@ public class Player : MonoBehaviour
     private void Update()
     {
         SetPlayerHpUI();
-           
     }
 
     void SetPlayerHpUI()
     {
         for(int i=0; i<3; i++)
         {
-            if(hp >=3) //hp 3
+            if(hp == 3) //hp 3
             {
                 HpImg[i].SetActive(true);
             }
-            else if(hp >= 2) //hp 2
+            else if(hp == 2) //hp 2
             {
                 HpImg[i].SetActive(true);
                 if (i == 2)
@@ -43,13 +42,12 @@ public class Player : MonoBehaviour
                     break;
                 }              
             }
-            else if(hp >= 1)
+            else if(hp == 1)
             {
                 HpImg[i].SetActive(true);
-                if (i == 1)
+                if (i == 1 || i ==2)
                 {
                     HpImg[i].SetActive(false);
-                    break;
                 }              
             }
             else

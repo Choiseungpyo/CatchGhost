@@ -102,7 +102,8 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         gameStartCopy = "true";
-        SceneManager.LoadScene("Ending");  
+        Ghost.instance.SaveKilledGhostCntData();
+        SceneManager.LoadScene("Ending");
     }
 
 }//End Class
