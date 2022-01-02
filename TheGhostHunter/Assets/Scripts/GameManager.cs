@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     public string gameStart = "true"; //playerPrefs 대신 static을 이용하여 다른씬으로 이동했다 와도 데이터 저장되어 있게함
     static string gameStartCopy = "true";
 
+    [HideInInspector]
+    public string reasonWhyGameEnded;
+
     static public GameManager instance;
     private void Awake()
     {
@@ -55,6 +58,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void SaveReasonWhyGameEndedData()
+    {
+        PlayerPrefs.SetString("ReasonWhyGameEnded", reasonWhyGameEnded);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadReasonWhyGameEndedData()
+    {
+        if (!PlayerPrefs.HasKey("ReasonWhyGameEnded"))
+        {
+            reasonWhyGameEnded = PlayerPrefs.GetString("ReasonWhyGameEnded", "");
+        }
+        else
+        {
+            reasonWhyGameEnded = PlayerPrefs.GetString("ReasonWhyGameEnded");
+        }
+    }
+
 
     //Game Over 조건 확인
     //1. Hp == 0
@@ -64,7 +85,8 @@ public class GameManager : MonoBehaviour
     {
         if (Player.instance.hp <= 0)
         {
-            Debug.Log("Hp <=0 : 게임 종료");
+            //Debug.Log("Hp <=0 : 게임 종료");
+            reasonWhyGameEnded = "Hp ==0";
             GameOver();
         }
     }
@@ -76,9 +98,11 @@ public class GameManager : MonoBehaviour
         {
             if(!Item.instance.playerItem[i].Contains("Bullet")) //유령을 죽일 수 있는 총알을 가지고 있지 않을 경우
             {                
-                if (Item.instance.coin < 500) //총알을 구입할 수 있는 최소 금액보다 작은 경우
+                if (i == 5 && Item.instance.coin < 500) //총알을 구입할 수 있는 최소 금액보다 작은 경우
                 {
-                    Debug.Log("총알 구매 최소 금액 x && 총알 가지고 있지 않음 : 게임 종료");
+                    //Debug.Log("총알 구매 최소 금액 소지 x && 총알 가지고 있지 않음 : 게임 종료");
+                    reasonWhyGameEnded = "총알 구매 최소 금액 x && 총알 소지 x";
+
                     GameOver();
                     break;
                 }
@@ -94,7 +118,8 @@ public class GameManager : MonoBehaviour
     {
         if (TimeController.instance.limitTime <= 0) //제한시간 종료
         {
-            Debug.Log("제한 시간 종료");
+            //Debug.Log("제한 시간 종료");
+            reasonWhyGameEnded = "제한 시간 종료";
             GameOver();               
         }
     }
@@ -103,6 +128,7 @@ public class GameManager : MonoBehaviour
     {
         gameStartCopy = "true";
         Ghost.instance.SaveKilledGhostCntData();
+        SaveReasonWhyGameEndedData();
         SceneManager.LoadScene("Ending");
     }
 

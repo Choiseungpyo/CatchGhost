@@ -22,7 +22,8 @@ public class Item : MonoBehaviour
 
     //총알을 제외한 아이템 사용 관련
     static int usingItemIndex;
-    
+
+    Vector4 orangeColor = new Vector4(1, 180f / 255, 0, 1);
 
     //Reduce Ghost Speed
     [HideInInspector]
@@ -31,7 +32,8 @@ public class Item : MonoBehaviour
     static int usingItemRGSIndex;
 
     //Increase Ghost Price
-    static bool usingItemIGP= false;
+    [HideInInspector]
+    public bool usingItemIGP= false;
     static float timeToUseIGP = 10; //Scene 이동시에도 아이템 사용시간은 흘러가게 만들기 위해 static 이용
     static int usingItemIGPIndex;
 
@@ -44,7 +46,8 @@ public class Item : MonoBehaviour
     {
         instance = this;
         LoadCoinData();
-        LoadUsingItemData();
+        LoadUsingItemRGSData();
+        LoadUsingItemIGPData();
         if (SceneManager.GetActiveScene().name == "Main")
         {
             for (int i = 0; i < ItemCompartmentBtn.Length; i++)
@@ -63,6 +66,17 @@ public class Item : MonoBehaviour
         }
         else if (SceneManager.GetActiveScene().name == "Shop")
         {
+            if(usingItemRGS == true)
+            {
+                GameObject.Find("ItemBtn" + usingItemRGSIndex).GetComponent<Image>().color = orangeColor;
+            }
+
+            if (usingItemIGP == true)
+            {
+                GameObject.Find("ItemBtn" + usingItemIGPIndex).GetComponent<Image>().color = orangeColor;
+            }
+
+
             for (int i = 0; i < ItemCompartmentBtn.Length; i++)
             {
                 ItemCompartmentBtn[i].gameObject.SetActive(true);
@@ -116,7 +130,7 @@ public class Item : MonoBehaviour
     }
 
     IEnumerator OpenItemComaprtmentEffect() //아이템 창을 우->좌로 열리는 효과
-    {
+    { 
         for (int i = 0; i < 5; i++)
         {
             ItemCompartmentBtn[i].gameObject.SetActive(true);
@@ -213,6 +227,7 @@ public class Item : MonoBehaviour
             GameManager.instance.SaveGameData();
             SaveItemData();
             SaveUsingItemRGSData();
+            SaveUsingItemIGPData();
             Ghost.instance.SaveKilledGhostCntData();
 
             SceneManager.LoadScene("Shop");
@@ -241,13 +256,16 @@ public class Item : MonoBehaviour
                 timeToUseRGS = 7;
                 ItemImg[usingItemRGSIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
                 playerItem[usingItemRGSIndex] = "empty";
+                GameObject.Find("ItemBtn" + usingItemRGSIndex).GetComponent<Image>().color = Color.white;
                 Debug.Log("Ruduce Ghost Price 사용 종료");
             }
-
-            //Debug.Log("timeToUseRGS : " + timeToUseRGS);
         }
+        else
+        {
+            timeToUseRGS = 7;
+        }
+        //Debug.Log("RGS Time :" + timeToUseRGS);
     }
-
     void IncreaseTime()
     {
         Debug.Log("Increase Time");
@@ -270,6 +288,7 @@ public class Item : MonoBehaviour
         Debug.Log("ReduceGhostSpeed");
         Ghost.instance.ghostPrice = 200;
     }
+
     void CalculateTimeToIGP() //IncreaseGhostPrice = IGP
     {
         if (usingItemIGP == true)
@@ -283,11 +302,15 @@ public class Item : MonoBehaviour
                 ItemImg[usingItemIGPIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
                 playerItem[usingItemIGPIndex] = "empty";
                 Ghost.instance.ghostPrice = 100;
+                GameObject.Find("ItemBtn" + usingItemIGPIndex).GetComponent<Image>().color = Color.white;
                 Debug.Log("Increase Ghost price 사용 종료");
             }
-
-            //Debug.Log("timeToUseRGS : " + timeToUseIGP);
         }
+        else
+        {
+            timeToUseIGP = 10;
+        }
+        //Debug.Log("IGP Time :" + timeToUseIGP);
     }
 
     public void CheckItemIWantToUse() //총알을 제외한 아이템을 사용하기 위해 해당 아이템의 버튼을 클릭할 경우
@@ -301,21 +324,22 @@ public class Item : MonoBehaviour
                 if (clickedBtn.name.Contains(i.ToString())) //1,2,3,4,5
                 {
                     usingItemIndex = i;
-                    UseItemOtherThanBullet();
+                    UseItemOtherThanBullet(clickedBtn);
                     break;
                 }
             } 
         }
     }
 
-    void UseItemOtherThanBullet() //총알을 제외한 아이템을 사용한다.
+    void UseItemOtherThanBullet(GameObject clickedBtn) //총알을 제외한 아이템을 사용한다.
     {
-        switch(ItemImg[usingItemIndex].GetComponent<Image>().sprite.name)
+        switch (ItemImg[usingItemIndex].GetComponent<Image>().sprite.name)
         {
             case "ReduceGhostSpeed":
                 if(usingItemRGS == false) //사용중이 아닌 경우
                 {
                     //나중에 효과 넣기 
+                    clickedBtn.GetComponent<Image>().color = orangeColor;
                     //사용중인 경우 사용중이라는 Effect 띄우기
                     usingItemRGSIndex = usingItemIndex;
                     ReduceGhostSpeed();
@@ -334,6 +358,7 @@ public class Item : MonoBehaviour
             case "DoubleCoin":
                 if (usingItemIGP == false) //사용중이 아닌 경우
                 {
+                    clickedBtn.GetComponent<Image>().color = orangeColor;
                     //나중에 효과 넣기 
                     //사용중인 경우 사용중이라는 Effect 띄우기
                     usingItemIGPIndex = usingItemIndex;
@@ -372,7 +397,7 @@ public class Item : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    void LoadUsingItemData()
+    void LoadUsingItemRGSData()
     {
         if (!PlayerPrefs.HasKey("UsingItemRGS"))
         {
@@ -384,6 +409,27 @@ public class Item : MonoBehaviour
             usingItemRGS = bool.Parse(PlayerPrefs.GetString("UsingItemRGS"));
         }
     }
+
+    public void SaveUsingItemIGPData()
+    {
+        PlayerPrefs.SetString("UsingItemIGP", usingItemIGP.ToString());
+        PlayerPrefs.Save();
+    }
+
+    void LoadUsingItemIGPData()
+    {
+        if (!PlayerPrefs.HasKey("UsingItemIGP"))
+        {
+            usingItemIGP = bool.Parse(PlayerPrefs.GetString("UsingItemIGP", "false"));
+        }
+        else
+        {
+            usingItemIGP = bool.Parse(PlayerPrefs.GetString("UsingItemIGP"));
+        }
+    }
+
+
+
 
     public void SaveItemData()
     {

@@ -78,6 +78,7 @@ public class Shop : MonoBehaviour
         Item.instance.SaveItemData();
         Item.instance.SaveCoinData();
         Item.instance.SaveUsingItemRGSData();
+        Item.instance.SaveUsingItemIGPData();
         SceneManager.LoadScene("Main");
     }
 
@@ -86,7 +87,7 @@ public class Shop : MonoBehaviour
     {
         GameObject clickedBtn = EventSystem.current.currentSelectedGameObject;
         
-        for(int i=0; i<6; i++)
+        for(int i=0; i<6; i++) //버튼 인덱스 검사
         {
             if(clickedBtn.name.Contains((i+1).ToString()))
             {
@@ -94,9 +95,13 @@ public class Shop : MonoBehaviour
                 {
                     for(int a=0; a <6; a++)
                     {
-                        if(Item.instance.playerItem[a] == "empty")
+                        if(Item.instance.playerItem[a] == "empty") //플레이어가 가지고 있는 아이템 창이 비어있을 경우
                         {
-                            if (shopItem[i, 0] == "empty")
+                            if (shopItem[i, 0] == "empty") //구매하고자 하는 아이템이 비어있다면 구매 x
+                                continue;
+
+                            //총알이 아닌 다른 아이템은 item칸에 제일 앞칸(사용중인 총알)에 들어가지 않게 함.
+                            if (!shopItem[i, 0].Contains("Bullet") && a == 0) 
                                 continue;
 
                             Item.instance.coin -= int.Parse(shopItem[i, 1]); //코인 차감

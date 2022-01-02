@@ -428,6 +428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameStart: true
+  reasonWhyGameEnded: 
 --- !u!4 &251051870
 Transform:
   m_ObjectHideFlags: 0
@@ -635,6 +636,7 @@ MonoBehaviour:
   - 
   - 
   usingItemRGS: 0
+  usingItemIGP: 0
   coin: 10000
 --- !u!4 &369392966
 Transform:
@@ -2644,7 +2646,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3317276134216924910}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5, y: -1.5, z: 0}
+  m_LocalPosition: {x: -4.37, y: -2.5, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 1172013782}
@@ -2658,7 +2660,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2449252359460819303}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.5, y: 1, z: 0}
+  m_LocalPosition: {x: 4.1, y: 0, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 1172013782}
@@ -3048,7 +3050,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5393442048552676849}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5, y: 3.5, z: 0}
+  m_LocalPosition: {x: -4.12, y: 2.5, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 1172013782}
