@@ -383,7 +383,7 @@ public class Item : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("Coin"))
         {
-            coin = PlayerPrefs.GetInt("Coin", 0);
+            coin = PlayerPrefs.GetInt("Coin", 10000);
         }
         else
         {

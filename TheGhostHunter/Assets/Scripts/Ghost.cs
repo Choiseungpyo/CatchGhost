@@ -15,6 +15,7 @@ public class Ghost : MonoBehaviour
     public GameObject[] GhostObj = new GameObject[3];
     public GameObject PurpleGhostObj;
     public GameObject PurpleGhostAppearEffect;
+    public GameObject HitEffect;
 
     //죽인 유령 수
     [HideInInspector]
@@ -41,7 +42,8 @@ public class Ghost : MonoBehaviour
         LoadKilledGhostCntData();
 
         if (SceneManager.GetActiveScene().name == "Main")
-        {       
+        {
+            HitEffect.SetActive(false);
             //유령 재생성 위치
             ghostResetPos[0] = new Vector3(-3.5f, 2.5f, 0);
             ghostResetPos[1] = new Vector3(3.5f, 0, 0);
@@ -106,6 +108,7 @@ public class Ghost : MonoBehaviour
 
             PurpleGhostObj = null;
             PurpleGhostAppearEffect = null;
+            HitEffect = null;
         }
         else if (SceneManager.GetActiveScene().name == "Title")
         {
@@ -138,6 +141,7 @@ public class Ghost : MonoBehaviour
 
             PurpleGhostObj = null;
             PurpleGhostAppearEffect = null;
+            HitEffect = null;
 
             GhostObj[ghostColor[0]].GetComponent<SpriteRenderer>().color = Color.white;
             GhostObj[ghostColor[1]].GetComponent<SpriteRenderer>().color = Color.red;
@@ -383,6 +387,7 @@ public class Ghost : MonoBehaviour
                 }
                 else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
                 {
+                    StartCoroutine("ViewHitEffect");
                     Player.instance.hp -= 1;
                     //Debug.Log("Hp :" + Player.instance.hp);
                 }
@@ -586,8 +591,6 @@ public class Ghost : MonoBehaviour
 
     void StopPurpleGhostCoroutine()
     {
-        int ghostRandomTime;
-
         if (purpleGhostIsDead == true)
         {
             //stopCououtine은 String으로 호출하면 String으로 멈춰야한다.
@@ -596,8 +599,7 @@ public class Ghost : MonoBehaviour
             StopCoroutine("SetPurpleGhostRandomTimeToAppear");
             purpleGhostIsDead = false;
             Debug.Log("보라색 유령 사망");
-            ghostRandomTime = Random.Range(8, 13);
-            Invoke("PurpleGhostAppearForTheFirstTime", ghostRandomTime);
+            StartCoroutine("SetPurpleGhostRandomTimeToAppear");
         }
     }
 
@@ -637,6 +639,15 @@ public class Ghost : MonoBehaviour
             //3. 보라색 유령을 죽이거나 사라질때까지 아이템 창을 닫지 못하게 함.
             //이를 item Class에서 제어함
         }
+    }
+
+    IEnumerator ViewHitEffect()
+    {
+        HitEffect.SetActive(true);
+
+        yield return new WaitForSeconds(0.3f);
+
+        HitEffect.SetActive(false);
     }
 
 

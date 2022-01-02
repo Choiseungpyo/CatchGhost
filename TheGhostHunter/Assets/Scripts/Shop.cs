@@ -91,6 +91,13 @@ public class Shop : MonoBehaviour
         {
             if(clickedBtn.name.Contains((i+1).ToString()))
             {
+                if (CheckSameItem(shopItem[i, 0]) == true)
+                {
+                    Debug.Log("똑같은 아이템이 이미 있습니다. ");
+                    break;
+                }
+                  
+
                 if(int.Parse(shopItem[i,1]) <= Item.instance.coin)
                 {
                     for(int a=0; a <6; a++)
@@ -152,6 +159,18 @@ public class Shop : MonoBehaviour
             GameObject.Find("BuyItemImg"+(i+1).ToString()).GetComponent<Image>().sprite 
             = Resources.Load(shopItem[i,0], typeof(Sprite)) as Sprite;
         }
+    }
+
+    bool CheckSameItem(string itemNameIWantToBuy)
+    {
+        for(int i=0; i<6; i++)
+        {
+            if(Item.instance.playerItem[i] == itemNameIWantToBuy)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void moveNextPage()

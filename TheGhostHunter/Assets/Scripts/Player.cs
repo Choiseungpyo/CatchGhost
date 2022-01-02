@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public int hp = 3;
 
+
+
     public GameObject[] HpImg = new GameObject[3];
 
 
@@ -15,7 +17,6 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         instance = this;
-
         LoadHpData();
     }
 
@@ -74,4 +75,6 @@ public class Player : MonoBehaviour
             hp = PlayerPrefs.GetInt("Hp");
         }
     }
+
+   
 }//End Class
