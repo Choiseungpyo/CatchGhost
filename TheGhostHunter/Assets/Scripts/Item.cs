@@ -50,6 +50,16 @@ public class Item : MonoBehaviour
         LoadUsingItemIGPData();
         if (SceneManager.GetActiveScene().name == "Main")
         {
+            if(usingItemRGS == true)
+            {
+                GameObject.Find("ItemBtn" + usingItemRGSIndex).GetComponent<Image>().color = orangeColor;
+            }
+
+            if(usingItemIGP == true)
+            {
+                GameObject.Find("ItemBtn" + usingItemIGPIndex).GetComponent<Image>().color = orangeColor;
+            }
+
             for (int i = 0; i < ItemCompartmentBtn.Length; i++)
             {
                 ItemCompartmentBtn[i].gameObject.SetActive(false);
@@ -383,7 +393,7 @@ public class Item : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("Coin"))
         {
-            coin = PlayerPrefs.GetInt("Coin", 10000);
+            coin = PlayerPrefs.GetInt("Coin", 0);
         }
         else
         {
