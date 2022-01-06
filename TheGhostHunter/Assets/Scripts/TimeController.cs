@@ -24,8 +24,6 @@ public class TimeController : MonoBehaviour
         TimeText.text = Mathf.Round(limitTime).ToString();
     }
 
-
-
     public void SaveTimeData()
     {
         PlayerPrefs.SetFloat("Time", limitTime);

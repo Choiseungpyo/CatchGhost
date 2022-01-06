@@ -14,8 +14,8 @@ public class Ghost : MonoBehaviour
     [HideInInspector]
     public GameObject[] GhostObj = new GameObject[3];
     public GameObject PurpleGhostObj;
-    public GameObject PurpleGhostAppearEffect;
     public GameObject HitEffect;
+    public GameObject ItemPurpleGhostStole;
 
     //죽인 유령 수
     [HideInInspector]
@@ -27,8 +27,24 @@ public class Ghost : MonoBehaviour
     Vector3[] ghostResetPos = new Vector3[3];
     int[] ghostColor = new int[4]; //0:하얀색 1:빨간색 2:파란색 3:보라색
 
-    //보라색 유령
-    bool purpleGhostIsDead = false;
+    //보라색 유령(purple ghost = pg)
+    [HideInInspector]
+    public enum PurpleGhostState
+    {
+        Come, Find, Wait, Go //Come: 왼쪽 아래 대각선 이동 Find:왼쪽으로 이동 Wait: 대기 GO: 왼쪽 위 대각선 이동
+    };
+    [HideInInspector]
+    public PurpleGhostState purpleGhostState = PurpleGhostState.Come;
+
+    private bool pgMoving = false;
+    private float pgMovingDistance = 3.0f;            // 이동 시키고 싶은 거리를 정해주면 됨
+    private Vector2 pgDestinationPos;      // 이동해야할 최종 위치
+    private Vector2 pgCurrentPos = new Vector2(4, 0);    // 내 위치 (텍스쳐 그려질 위치)
+    bool controlPGFindMoving = true;
+    [HideInInspector]
+    public int purpleGhostPosIndex;
+
+
 
     //유령 가격
     [HideInInspector]
@@ -43,6 +59,10 @@ public class Ghost : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "Main")
         {
+            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+            PurpleGhostObj.GetComponents<BoxCollider2D>()[0].enabled = true; 
+            PurpleGhostObj.GetComponents<BoxCollider2D>()[1].enabled = false; 
+
             HitEffect.SetActive(false);
             //유령 재생성 위치
             ghostResetPos[0] = new Vector3(-3.5f, 2.5f, 0);
@@ -80,10 +100,7 @@ public class Ghost : MonoBehaviour
             ghostSpeed[2] = 0.1f;        
 
             //보라색 유령 초기 위치
-            PurpleGhostObj.transform.position = new Vector3(0, -5.5f, 0);
-
-            //보라색 유령 나타날 시 Effect
-            PurpleGhostAppearEffect.SetActive(false);
+            PurpleGhostObj.transform.position = new Vector3(4, 0, 0);
         }
         else if(SceneManager.GetActiveScene().name == "Ending")
         {
@@ -107,7 +124,6 @@ public class Ghost : MonoBehaviour
             ghostColor[3] = 3; //보라색 유령
 
             PurpleGhostObj = null;
-            PurpleGhostAppearEffect = null;
             HitEffect = null;
         }
         else if (SceneManager.GetActiveScene().name == "Title")
@@ -140,7 +156,6 @@ public class Ghost : MonoBehaviour
             ghostSpeed[2] = 0.01f;
 
             PurpleGhostObj = null;
-            PurpleGhostAppearEffect = null;
             HitEffect = null;
 
             GhostObj[ghostColor[0]].GetComponent<SpriteRenderer>().color = Color.white;
@@ -154,7 +169,8 @@ public class Ghost : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name == "Main")
         {
-            StartCoroutine("SetPurpleGhostRandomTimeToAppear"); //게임 시작후 10초뒤 보라색 유령이 나오게 설정
+            //보라색 유령 처음에 10초후에 등장시키기
+            Invoke("FirstPurpleGhost", 3);
         }
     }
 
@@ -163,10 +179,10 @@ public class Ghost : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name == "Main" || SceneManager.GetActiveScene().name == "Title")
         {
-            MoveGhost();
-            ViewPurpleGhostWhtenItemCompartmentIsOpen();
+            //MoveGhost(); 
+            MovePurpleGhost();
+            ChangePurpleGhostCollider();
             KillGhost();
-            StopPurpleGhostCoroutine();
         }
     }
 
@@ -346,108 +362,108 @@ public class Ghost : MonoBehaviour
 
     void KillGhost()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    RaycastHit2D hit = Physics2D.Raycast(pos, transform.forward, 0f);
-        //    if (hit.collider != null)
-        //    {
-        //        int ghostNum;
-
-        //        ghostNum = returnGhostNum(hit.collider.name);
-        //        if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
-        //        {
-        //            if (hit.collider.gameObject.name == "Ghost1")
-        //            {
-        //                Debug.Log("Main Scene 이동");
-        //                SceneManager.LoadScene("Main");
-        //                return;
-        //            }
-        //            else if (hit.collider.gameObject.name == "Ghost2")
-        //            {
-        //                Debug.Log("Tutorial Scene 이동");
-        //                SceneManager.LoadScene("Tutorial");
-        //                return;
-        //            }
-        //            else if (hit.collider.gameObject.name == "Ghost3")
-        //            {
-        //                Debug.Log("게임 종료");
-        //                Application.Quit();
-        //                return;
-        //            }
-        //        }
-        //        //Debug.Log(hit.collider.name);
-        //        if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
-        //        {
-        //            killedGhostCnt += 1;
-        //            Item.instance.coin += ghostPrice;
-        //            //Debug.Log("Coin :" + Item.instance.coin);
-        //            //Debug.Log(hit.collider.name + "을 죽였습니다.");
-        //            ResetGhostAttribute(ghostNum);
-        //        }
-        //        else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
-        //        {
-        //            StartCoroutine("ViewHitEffect");
-        //            Player.instance.hp -= 1;
-        //            //Debug.Log("Hp :" + Player.instance.hp);
-        //        }
-        //    }
-        //}
-
-
-        //모바일 터치 
-        if (Input.touchCount > 0)
+        if (Input.GetMouseButtonDown(0))
         {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(pos, transform.forward, 0f);
+            if (hit.collider != null)
             {
-                Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero, 0f, LayerMask.GetMask("Ghost"));
+                int ghostNum;
 
-                if (hit.collider != null)
+                ghostNum = returnGhostNum(hit.collider.name);
+                if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
                 {
-                    int ghostNum;
-
-                    ghostNum = returnGhostNum(hit.collider.name);
-                    if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
+                    if (hit.collider.gameObject.name == "Ghost1")
                     {
-                        if (hit.collider.gameObject.name == "Ghost1")
-                        {
-                            Debug.Log("Main Scene 이동");
-                            SceneManager.LoadScene("Main");
-                            return;
-                        }
-                        else if (hit.collider.gameObject.name == "Ghost2")
-                        {
-                            Debug.Log("Tutorial Scene 이동");
-                            SceneManager.LoadScene("Tutorial");
-                            return;
-                        }
-                        else if (hit.collider.gameObject.name == "Ghost3")
-                        {
-                            Debug.Log("게임 종료");
-                            Application.Quit();
-                            return;
-                        }
+                        Debug.Log("Main Scene 이동");
+                        SceneManager.LoadScene("Main");
+                        return;
                     }
-                    //Debug.Log(hit.collider.name);
-                    if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+                    else if (hit.collider.gameObject.name == "Ghost2")
                     {
-                        killedGhostCnt += 1;
-                        Item.instance.coin += ghostPrice;
-                        //Debug.Log("Coin :" + Item.instance.coin);
-                        //Debug.Log(hit.collider.name + "을 죽였습니다.");
-                        ResetGhostAttribute(ghostNum);
+                        Debug.Log("Tutorial Scene 이동");
+                        SceneManager.LoadScene("Tutorial");
+                        return;
                     }
-                    else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+                    else if (hit.collider.gameObject.name == "Ghost3")
                     {
-                        Player.instance.hp -= 1;
-                        //Debug.Log("Hp :" + Player.instance.hp);
+                        Debug.Log("게임 종료");
+                        Application.Quit();
+                        return;
                     }
+                }
+                //Debug.Log(hit.collider.name);
+                if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+                {
+                    killedGhostCnt += 1;
+                    Item.instance.coin += ghostPrice;
+                    //Debug.Log("Coin :" + Item.instance.coin);
+                    //Debug.Log(hit.collider.name + "을 죽였습니다.");
+                    ResetGhostAttribute(ghostNum);
+                }
+                else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+                {
+                    StartCoroutine("ViewHitEffect");
+                    Player.instance.hp -= 1;
+                    //Debug.Log("Hp :" + Player.instance.hp);
                 }
             }
         }
+
+
+        //모바일 터치 
+        //if (Input.touchCount > 0)
+        //{
+        //    Touch touch = Input.GetTouch(0);
+
+        //    if (touch.phase == TouchPhase.Began)
+        //    {
+        //        Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //        RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero, 0f, LayerMask.GetMask("Ghost"));
+
+        //        if (hit.collider != null)
+        //        {
+        //            int ghostNum;
+
+        //            ghostNum = returnGhostNum(hit.collider.name);
+        //            if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
+        //            {
+        //                if (hit.collider.gameObject.name == "Ghost1")
+        //                {
+        //                    Debug.Log("Main Scene 이동");
+        //                    SceneManager.LoadScene("Main");
+        //                    return;
+        //                }
+        //                else if (hit.collider.gameObject.name == "Ghost2")
+        //                {
+        //                    Debug.Log("Tutorial Scene 이동");
+        //                    SceneManager.LoadScene("Tutorial");
+        //                    return;
+        //                }
+        //                else if (hit.collider.gameObject.name == "Ghost3")
+        //                {
+        //                    Debug.Log("게임 종료");
+        //                    Application.Quit();
+        //                    return;
+        //                }
+        //            }
+        //            //Debug.Log(hit.collider.name);
+        //            if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+        //            {
+        //                killedGhostCnt += 1;
+        //                Item.instance.coin += ghostPrice;
+        //                //Debug.Log("Coin :" + Item.instance.coin);
+        //                //Debug.Log(hit.collider.name + "을 죽였습니다.");
+        //                ResetGhostAttribute(ghostNum);
+        //            }
+        //            else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+        //            {
+        //                Player.instance.hp -= 1;
+        //                //Debug.Log("Hp :" + Player.instance.hp);
+        //            }
+        //        }
+        //    }
+        //}
     }
 
     bool CompareGhostColorToBullet(int ghostNum)
@@ -489,9 +505,14 @@ public class Ghost : MonoBehaviour
     {
         if (ghostNum == 3) //Purple Ghost
         {
-            purpleGhostIsDead = true;
-            PurpleGhostAppearEffect.SetActive(false);
-            PurpleGhostObj.transform.position = new Vector3(0, -5.5f, 0); //화면 바깥으로 사라지도록 한다.
+            CancelInvoke("ChangeMoingFalseToTrue");
+            pgMoving = false;
+            purpleGhostState = PurpleGhostState.Go;
+            PurpleGhostObj.transform.position = new Vector3(4, 0, 0);
+            pgCurrentPos = new Vector2(4, 0);
+            controlPGFindMoving = true;
+            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+            Invoke("ChangeMoingFalseToTrue", SetPurpleGhostRandomTimeToAppear());
         }
         else
         {
@@ -510,7 +531,7 @@ public class Ghost : MonoBehaviour
     //플레이어가 아이템 창을 닫아 놓을 경우 - 사용중인 아이템 주변에 보라색 빛이 발생 -> 이후 랜덤 아이템 위치 칸에 등장.
     //Item.instance.usingItemBtn 을 통해 열렸을 경우를 확인한다.
 
-    int SetPurpleGhostRandomPos()
+    Vector2 SetPurpleGhostRandomPos()
     {
         int randomIndex;
         float[] ghostRandomPosSet = new float[6];
@@ -524,6 +545,173 @@ public class Ghost : MonoBehaviour
 
 
         randomIndex = Random.Range(0, 6); //0~5
+
+        while (Item.instance.playerItem[randomIndex] == "empty") //아이템이 존재하는 칸에만 Purple Ghost가 나타나게 함.
+        {
+            randomIndex = Random.Range(0, 6);
+        }
+
+        purpleGhostPosIndex = randomIndex;
+
+        return new Vector2(ghostRandomPosSet[randomIndex], -4.3f);
+    }
+
+
+    void MovePurpleGhost()
+    {
+        if (pgMoving == false)
+            return;
+
+        ControlPurpleGhostMoving();
+
+
+        // 내 위치에서 가야 할 위치에 대한 방향을 구한다.
+        Vector2 vec2Dir = pgDestinationPos - pgCurrentPos;
+        vec2Dir.Normalize();        // 단위 벡터를 만든다.
+
+        // 가야할 방에 시간 값을 곱해서 조금씩 이동하게 한다.
+        // (시간값 * 이동 거리 = 한 프레임당 이동하고 싶은 간격)
+        Vector2 vec2Temp = vec2Dir * (Time.deltaTime * pgMovingDistance);
+
+        // 내 위치에서 이동해야할 방향 값을 더하면 조금 이동했을 때의 위치값이 나온다.
+        vec2Temp = pgCurrentPos + vec2Temp;
+
+        // 현재 내 위치로부터 계산되서 나온 다음 위치까지의 거리를 구한다.
+        float fNowDistance = Vector2.Distance(vec2Temp, pgCurrentPos);
+
+        // 내 위치로부터 최종 목적지로 설정된 위치까지의 거리를 구한다.
+        float fDestDistance = Vector2.Distance(pgDestinationPos, pgCurrentPos);
+
+        // 두 위치 값을 비교해서 목적 위치를 지나쳤는지 검사한다.
+        // 현재 예상 거리 값이 최종 거리 값을 넘기거나 같으면 더이상 이동 할 필요 없음
+        if (fNowDistance >= fDestDistance)
+        {
+            pgMoving = false;
+            // 현재 위치 값을 최종 위치 값으로 설정
+            ControlPurpleGhostMoving();
+            pgCurrentPos = pgDestinationPos;
+        }
+        else
+        {
+            pgCurrentPos = vec2Temp;
+        }
+        PurpleGhostObj.transform.position = new Vector3(pgCurrentPos[0], pgCurrentPos[1], 0);
+    }
+
+    //날아와서 대기(코루틴 위) -> 1.5초 (waitforseconds) -> 날아감(코루틴 아래) 
+    //날아와서 대기(move함수) -> 1.5초 (Invoke) -> 날아감(move함수)
+    //come -> wait -> go
+
+    void ControlPurpleGhostMoving()
+    {
+        if (pgMoving == true) //움직이는 중
+        {
+            if (purpleGhostState == PurpleGhostState.Come)
+            {
+                if (CheckIfAllTheItemsAreEmpty() == false) //아이템이 하나라도 있을경우 보라색 유령을 움직이게 한다.
+                {
+                    //목표 지점 : 사용중인 아이템 위치
+                    pgDestinationPos = new Vector2(2.3f, -4.3f);
+                }
+            }
+            else if (purpleGhostState == PurpleGhostState.Find)
+            {
+                //목표 지점 : 랜덤한 아이템 위치
+                if (controlPGFindMoving == true) //한번만 동작하도록 
+                {
+                    controlPGFindMoving = false;
+                    pgDestinationPos = SetPurpleGhostRandomPos();
+                    //Debug.Log("랜덤한 아이템 위치 : " + pgDestinationPos);
+                }
+            }
+            else if (purpleGhostState == PurpleGhostState.Go)
+            {
+                //목표 지점 : 왼쪽 화면 바깥
+                pgDestinationPos = new Vector2(-4, 0);
+            }
+
+        }//움직임을 멈춤.
+        else
+        {
+            if (purpleGhostState == PurpleGhostState.Come)
+            { 
+                if (CheckIfAllTheItemsAreEmpty() == false) //아이템이 하나라도 있을경우 보라색 유령을 움직이게 한다.
+                {
+                    //사용중인 아이템 자리에 도착하면 아이템창이 열리도록 하게 하기           
+                    Invoke("ChangeMoingFalseToTrue", 0.5f);
+                }
+            }
+            else if (purpleGhostState == PurpleGhostState.Find)
+            {
+                purpleGhostState = PurpleGhostState.Wait;
+                Invoke("ChangeMoingFalseToTrue", 2);
+            }
+            else if (purpleGhostState == PurpleGhostState.Go)
+            {
+                pgDestinationPos = new Vector2(4, 0);//처음 위치
+                controlPGFindMoving = true;
+                Invoke("ChangeMoingFalseToTrue", SetPurpleGhostRandomTimeToAppear());       
+            }
+        }     
+    }
+
+    void ChangeMoingFalseToTrue()
+    {
+        if (purpleGhostState == PurpleGhostState.Come)
+        {
+            purpleGhostState = PurpleGhostState.Find;
+        }
+        else if (purpleGhostState == PurpleGhostState.Wait)
+        {
+            StealItem();
+            purpleGhostState = PurpleGhostState.Go;
+        }
+        else if (purpleGhostState == PurpleGhostState.Go)
+        {
+            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+            purpleGhostState = PurpleGhostState.Come;
+        }
+
+        pgMoving = true;
+    }
+
+    int SetPurpleGhostRandomTimeToAppear()
+    {
+        int randomTime;
+        randomTime = Random.Range(3, 6);
+
+        return randomTime;
+    }
+
+    void FirstPurpleGhost() //보라색 유령 처음에 나왔을때만 동작하는 함수
+    {
+        pgMoving = true;
+    }
+
+    void StealItem()
+    {
+        if (Item.instance.usingItemIGP == true && purpleGhostPosIndex != 0) //아이템을 사용중인 경우에 아이템을 뺏을 경우 아이템 사용 중단 
+        {
+            ghostPrice = 100;
+            Item.instance.usingItemIGP = false;
+            GameObject.Find("ItemBtn" + purpleGhostPosIndex).GetComponent<Image>().color = Color.white;
+        }
+        else if (Item.instance.usingItemRGS == true && purpleGhostPosIndex != 0)//아이템을 사용중인 경우에 아이템을 뺏을 경우 아이템 사용 중단
+        {
+            Item.instance.usingItemRGS = false;
+            GameObject.Find("ItemBtn" + purpleGhostPosIndex).GetComponent<Image>().color = Color.white;
+        }
+
+        //리소스에 따라 크기가 일정하지 않아서 나중에 수정하기
+        ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load(Item.instance.playerItem[purpleGhostPosIndex], typeof(Sprite)) as Sprite;
+
+
+        Item.instance.ItemImg[purpleGhostPosIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        Item.instance.playerItem[purpleGhostPosIndex] = "empty";
+    }
+
+    bool CheckIfAllTheItemsAreEmpty()
+    {
         for (int i = 0; i < Item.instance.playerItem.Length; i++)
         {
             if (Item.instance.playerItem[i] != "empty")
@@ -535,111 +723,13 @@ public class Ghost : MonoBehaviour
                 if (i == 5) //아이템이 전부 비어있을 경우
                 {
                     Debug.Log("아이템이 전부 비어있습니다");
-                    return -1;
+                    return true;
                 }
             }
         }
-
-        while (Item.instance.playerItem[randomIndex] == "empty") //아이템이 존재하는 칸에만 Purple Ghost가 나타나게 함.
-        {
-            //아이템이 모두 없을시 여기서 무한루프 걸려 unity가 멈추었음
-            //위 for문에서 이를 해결함.
-            randomIndex = Random.Range(0, 6);
-        }
-
-        if (Item.instance.itemBtnBV == true && randomIndex != 0) //아이템 창이 닫혀있을 경우
-        {
-            //아이템 창이 닫혀있는 경우에만 보라색 이펙트 사용
-            ViewPurpleGhostAppearEffect(true);
-            PurpleGhostObj.SetActive(false);
-        }
-
-        PurpleGhostObj.transform.position = new Vector3(ghostRandomPosSet[randomIndex], -4.3f, 0);
-        return randomIndex;
+        return false;
     }
 
-    IEnumerator AppearPurpleGhost() //게임이 종료될때까지 계속 코루틴이 돌아가도록 한다
-    {
-        int randomPosIndex;
-        Debug.Log("AppearPurpleGhost 코루틴 동작 시작");
-        randomPosIndex = SetPurpleGhostRandomPos();
-
-        yield return new WaitForSeconds(2); //Purple Ghost가 2초후에 모습이 사라지도록 한다.
-
-        ViewPurpleGhostAppearEffect(false);
-        StealItem(randomPosIndex);
-        PurpleGhostObj.transform.position = new Vector3(0, -5.5f, 0); //화면 바깥으로 사라지도록 한다.
-        //Debug.Log("AppearPurpleGhost 코루틴 동작 끝");
-        StartCoroutine("SetPurpleGhostRandomTimeToAppear");
-    }
-
-    IEnumerator SetPurpleGhostRandomTimeToAppear() //Purple Ghost가 나타나는 랜덤한 시간 관리
-    {
-        int ghostRandomTime;
-        ghostRandomTime = Random.Range(8, 13); //8~12
-        Debug.Log(ghostRandomTime + "초 뒤에 Purple Ghost 출현");
-
-        yield return new WaitForSeconds(ghostRandomTime);
-
-        StartCoroutine("AppearPurpleGhost");
-    }
-
-    void ViewPurpleGhostAppearEffect(bool PurpleGhostAppearBV) //파라미터 : PurpleGHostAppear Bool Value
-    {
-        PurpleGhostAppearEffect.SetActive(PurpleGhostAppearBV);
-    }
-
-    void StopPurpleGhostCoroutine()
-    {
-        if (purpleGhostIsDead == true)
-        {
-            //stopCououtine은 String으로 호출하면 String으로 멈춰야한다.
-            //함수호출하듯이 코루틴을 호출했을 경우 코루틴 멈추지 않아 string으로 호출로 진행함.
-            StopCoroutine("AppearPurpleGhost");
-            StopCoroutine("SetPurpleGhostRandomTimeToAppear");
-            purpleGhostIsDead = false;
-            Debug.Log("보라색 유령 사망");
-            StartCoroutine("SetPurpleGhostRandomTimeToAppear");
-        }
-    }
-
-    void StealItem(int posIndex)
-    {
-        if (posIndex != -1) //아이템이 전부 비어있지 않은 경우만
-        {
-            if (Item.instance.usingItemIGP == true && posIndex != 0) //아이템을 사용중인 경우에 아이템을 뺏을 경우 아이템 사용 중단 
-            {
-                ghostPrice = 100;
-                Item.instance.usingItemIGP = false;
-                GameObject.Find("ItemBtn" + posIndex).GetComponent<Image>().color = Color.white;
-            }
-            else if (Item.instance.usingItemRGS == true && posIndex != 0)//아이템을 사용중인 경우에 아이템을 뺏을 경우 아이템 사용 중단
-            {
-                Item.instance.usingItemRGS = false;
-                GameObject.Find("ItemBtn" + posIndex).GetComponent<Image>().color = Color.white;
-            }
-
-            Item.instance.ItemImg[posIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
-            Item.instance.playerItem[posIndex] = "empty";
-        }
-    }
-
-    void ViewPurpleGhostWhtenItemCompartmentIsOpen() //아이템 창이 열려있을때 PurpleGhost를 보여준다.
-    {
-        if(SceneManager.GetActiveScene().name == "Main")
-        {
-            //아이템 창이 열려있을 경우 + Purple Ghost가 아이템 창에 나타나있을경우
-            if (Item.instance.itemBtnBV == false && PurpleGhostObj.transform.position.y > -5)
-            {
-                //Debug.Log("아이템 창이 열려있을 경우 + Purple Ghost가 아이템 창에 나타나있을경우");
-                PurpleGhostObj.SetActive(true);
-            }
-            //1. 아이템 창이 닫혀있는 상태에서 보라색 유령 등장 이펙트 뜸
-            //2. 이후 아이템 창을 열음
-            //3. 보라색 유령을 죽이거나 사라질때까지 아이템 창을 닫지 못하게 함.
-            //이를 item Class에서 제어함
-        }
-    }
 
     IEnumerator ViewHitEffect()
     {
@@ -650,6 +740,21 @@ public class Ghost : MonoBehaviour
         HitEffect.SetActive(false);
     }
 
+
+    void ChangePurpleGhostCollider()
+    {
+        if(PurpleGhostObj.transform.position.y > -4.3f)
+        {
+            //Collider변경 - 배열 순서는 인스펙터창 순서대로이다.
+            PurpleGhostObj.GetComponents<BoxCollider2D>()[0].enabled = true; //콜라이더 범위 : Purple Ghost 전체
+            PurpleGhostObj.GetComponents<BoxCollider2D>()[1].enabled = false; //콜라이더 범위 : Purple Ghost 머리부분만
+        }
+        else
+        {
+            PurpleGhostObj.GetComponents<BoxCollider2D>()[0].enabled = false;
+            PurpleGhostObj.GetComponents<BoxCollider2D>()[1].enabled = true;
+        }
+    }
 
     //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
     //데이터 저장 및 로드 

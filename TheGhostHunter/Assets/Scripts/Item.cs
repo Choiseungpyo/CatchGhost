@@ -41,6 +41,9 @@ public class Item : MonoBehaviour
     [HideInInspector]
     public int coin = 10000;
 
+    //Purple Ghost와 아이템 창 여는것 관련
+    bool controlPurpleGhostAndItem = true;
+
     static public Item instance;
     private void Awake()
     {
@@ -111,6 +114,7 @@ public class Item : MonoBehaviour
     {
         CalculateTimeToRGS();
         CalculateTimeToIGP();
+        OpenItemWhenPurpleGhostStateIsFind();
     }
 
     public void OpenItemCompartmentBtn() //UsingItem 버튼을 누르면 아이템 창을 연다.
@@ -126,7 +130,7 @@ public class Item : MonoBehaviour
             }           
             else if (itemBtnBV == false)
             {
-                if(Ghost.instance.PurpleGhostObj.transform.position.y < -5)
+                if(Ghost.instance.PurpleGhostObj.transform.position.x >= 3.25 || Ghost.instance.PurpleGhostObj.transform.position.y > -4.3f)
                 {
                     itemBtnBV = true;
                     StartCoroutine(CloseItemComaprtmentEffect());
@@ -149,10 +153,11 @@ public class Item : MonoBehaviour
             {
                 ItemCompartmentBtn[i].transform.localPosition += new Vector3(-220, 0, 0);
                 ItemImg[i+1].transform.localPosition += new Vector3(-220, 0, 0);
-                yield return new WaitForSeconds(0.005f);
+                yield return new WaitForSeconds(0.05f);
             }
         }
         usingItemBtn = false;
+        controlPurpleGhostAndItem = true;
     }
 
     IEnumerator CloseItemComaprtmentEffect() //아이템 창을 좌->우로 닫히는 효과
@@ -226,24 +231,24 @@ public class Item : MonoBehaviour
         }
     }
 
-    public void OpneShop()
+    //보라색 유령 Find가 되는 순간 아이템 창을 열어 놓는다.
+    void OpenItemWhenPurpleGhostStateIsFind()
     {
-        if(Ghost.instance.PurpleGhostObj.transform.position.y < -5) //Purple Ghost가 나타나 있지 않아야한다.
+        if(Ghost.instance.purpleGhostState == Ghost.PurpleGhostState.Find && controlPurpleGhostAndItem == true)
         {
-            //모든 데이터 Shop 이동 전에 저장하기
-            Player.instance.SaveHpData();
-            TimeController.instance.SaveTimeData();
-            SaveCoinData();
-            GameManager.instance.SaveGameData();
-            SaveItemData();
-            SaveUsingItemRGSData();
-            SaveUsingItemIGPData();
-            Ghost.instance.SaveKilledGhostCntData();
-
-            SceneManager.LoadScene("Shop");
-        }      
+            if (usingItemBtn == false && itemBtnBV == true)
+            {
+                if(Ghost.instance.purpleGhostPosIndex != 0) //사용중인 아이템을 보라색 유령이 가져가려고 하는 것이라면 아이템창이 열리지 않도록 한다.
+                {                   
+                    Debug.Log("보라색 유령이 아이템을 훔쳐가려고 아이템 창을 열었다.");
+                    controlPurpleGhostAndItem = false;
+                    usingItemBtn = true;
+                    StartCoroutine(OpenItemComaprtmentEffect());
+                    itemBtnBV = false;
+                }
+            }     
+        }
     }
-
    
 
     //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
@@ -393,7 +398,7 @@ public class Item : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("Coin"))
         {
-            coin = PlayerPrefs.GetInt("Coin", 0);
+            coin = PlayerPrefs.GetInt("Coin", 10000);
         }
         else
         {
@@ -411,7 +416,7 @@ public class Item : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("UsingItemRGS"))
         {
-            Debug.Log("usingItemRGS 초기화 x");
+            //Debug.Log("usingItemRGS 초기화 x");
             usingItemRGS = bool.Parse(PlayerPrefs.GetString("UsingItemRGS", "false"));
         }
         else
@@ -466,4 +471,26 @@ public class Item : MonoBehaviour
             }
         }
     }
+
+
+    public void OpneShop()
+    {
+        if (Ghost.instance.PurpleGhostObj.transform.position.x >= 3.25 || Ghost.instance.PurpleGhostObj.transform.position.x <= -3.25) //Purple Ghost가 나타나 있지 않아야한다.
+        {
+            //모든 데이터 Shop 이동 전에 저장하기
+            Player.instance.SaveHpData();
+            TimeController.instance.SaveTimeData();
+            SaveCoinData();
+            GameManager.instance.SaveGameData();
+            SaveItemData();
+            SaveUsingItemRGSData();
+            SaveUsingItemIGPData();
+            Ghost.instance.SaveKilledGhostCntData();
+
+            SceneManager.LoadScene("Shop");
+        }
+    }
+
+
+
 }//End Class
