@@ -59,7 +59,7 @@ public class Ghost : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "Main")
         {
-            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Item/empty");
             PurpleGhostObj.GetComponents<BoxCollider2D>()[0].enabled = true; 
             PurpleGhostObj.GetComponents<BoxCollider2D>()[1].enabled = false; 
 
@@ -170,7 +170,7 @@ public class Ghost : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Main")
         {
             //보라색 유령 처음에 10초후에 등장시키기
-            Invoke("FirstPurpleGhost", 3);
+            Invoke("FirstPurpleGhost", 15);
         }
     }
 
@@ -179,7 +179,7 @@ public class Ghost : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name == "Main" || SceneManager.GetActiveScene().name == "Title")
         {
-            //MoveGhost(); 
+            MoveGhost(); 
             MovePurpleGhost();
             ChangePurpleGhostCollider();
             KillGhost();
@@ -511,7 +511,7 @@ public class Ghost : MonoBehaviour
             PurpleGhostObj.transform.position = new Vector3(4, 0, 0);
             pgCurrentPos = new Vector2(4, 0);
             controlPGFindMoving = true;
-            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Item/empty");
             Invoke("ChangeMoingFalseToTrue", SetPurpleGhostRandomTimeToAppear());
         }
         else
@@ -668,7 +668,7 @@ public class Ghost : MonoBehaviour
         }
         else if (purpleGhostState == PurpleGhostState.Go)
         {
-            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+            ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Item/empty");
             purpleGhostState = PurpleGhostState.Come;
         }
 
@@ -703,10 +703,10 @@ public class Ghost : MonoBehaviour
         }
 
         //리소스에 따라 크기가 일정하지 않아서 나중에 수정하기
-        ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load(Item.instance.playerItem[purpleGhostPosIndex], typeof(Sprite)) as Sprite;
+        ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Item/"+Item.instance.playerItem[purpleGhostPosIndex]);
 
 
-        Item.instance.ItemImg[purpleGhostPosIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        Item.instance.ItemImg[purpleGhostPosIndex].sprite = Resources.Load<Sprite>("Item/empty");
         Item.instance.playerItem[purpleGhostPosIndex] = "empty";
     }
 
@@ -743,7 +743,10 @@ public class Ghost : MonoBehaviour
 
     void ChangePurpleGhostCollider()
     {
-        if(PurpleGhostObj.transform.position.y > -4.3f)
+        if (!(SceneManager.GetActiveScene().name == "Main"))
+            return;
+
+            if (PurpleGhostObj.transform.position.y > -4.3f)
         {
             //Collider변경 - 배열 순서는 인스펙터창 순서대로이다.
             PurpleGhostObj.GetComponents<BoxCollider2D>()[0].enabled = true; //콜라이더 범위 : Purple Ghost 전체

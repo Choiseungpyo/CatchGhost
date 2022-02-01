@@ -115,7 +115,7 @@ public class Shop : MonoBehaviour
 
                             //구매한 아이템을 아이템 창에 오른쪽부터 채우기
                             Item.instance.playerItem[a] = shopItem[i, 0];
-                            Item.instance.ItemImg[a].sprite = Resources.Load(shopItem[i,0], typeof(Sprite)) as Sprite;
+                            Item.instance.ItemImg[a].sprite = Resources.Load<Sprite>("Item/"+shopItem[i,0]);
                             break;
                         }
                     }                   
@@ -156,8 +156,7 @@ public class Shop : MonoBehaviour
         for (int i = 0; i < ItemPriceTxt.Length; i++)
         {
             ItemPriceTxt[i].text = shopItem[i, 1];
-            GameObject.Find("BuyItemImg"+(i+1).ToString()).GetComponent<Image>().sprite 
-            = Resources.Load(shopItem[i,0], typeof(Sprite)) as Sprite;
+            GameObject.Find("BuyItemImg"+(i+1).ToString()).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/" + shopItem[i, 0]);
         }
     }
 

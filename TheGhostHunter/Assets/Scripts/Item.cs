@@ -72,7 +72,7 @@ public class Item : MonoBehaviour
 
             for (int i = 0; i < ItemImg.Length; i++)
             {           
-                ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load(playerItem[i], typeof(Sprite)) as Sprite;
+                ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/"+playerItem[i]);
                 ItemImg[i].gameObject.SetActive(false);
             }
             ItemImg[0].gameObject.SetActive(true); //사용중인 아이템 이미지만 띄우기
@@ -99,7 +99,7 @@ public class Item : MonoBehaviour
 
             for (int i = 0; i < ItemImg.Length; i++)
             {
-                ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load(playerItem[i], typeof(Sprite)) as Sprite;
+                ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/"+playerItem[i]);
             }
         }
           
@@ -269,7 +269,7 @@ public class Item : MonoBehaviour
             {
                 usingItemRGS = false;
                 timeToUseRGS = 7;
-                ItemImg[usingItemRGSIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+                ItemImg[usingItemRGSIndex].sprite = Resources.Load<Sprite>("Item/empty");
                 playerItem[usingItemRGSIndex] = "empty";
                 GameObject.Find("ItemBtn" + usingItemRGSIndex).GetComponent<Image>().color = Color.white;
                 Debug.Log("Ruduce Ghost Price 사용 종료");
@@ -285,14 +285,14 @@ public class Item : MonoBehaviour
     {
         Debug.Log("Increase Time");
         TimeController.instance.limitTime += 10;
-        ItemImg[usingItemIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        ItemImg[usingItemIndex].sprite = Resources.Load<Sprite>("Item/empty");
         playerItem[usingItemIndex] = "empty";
     }
     void IncreaseHp()
     {
         Debug.Log("Heal Pack 사용");
         Player.instance.hp += 1;
-        ItemImg[usingItemIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+        ItemImg[usingItemIndex].sprite = Resources.Load<Sprite>("Item/empty");
         playerItem[usingItemIndex] = "empty";
     }
 
@@ -314,7 +314,7 @@ public class Item : MonoBehaviour
             {
                 usingItemIGP = false;
                 timeToUseIGP = 10;
-                ItemImg[usingItemIGPIndex].sprite = Resources.Load("empty", typeof(Sprite)) as Sprite;
+                ItemImg[usingItemIGPIndex].sprite = Resources.Load<Sprite>("Item/empty");
                 playerItem[usingItemIGPIndex] = "empty";
                 Ghost.instance.ghostPrice = 100;
                 GameObject.Find("ItemBtn" + usingItemIGPIndex).GetComponent<Image>().color = Color.white;
