@@ -45,10 +45,10 @@ public class Shop : MonoBehaviour
             }
         }
 
-        shopItem[0, 0] = "WhiteBullet";
-        shopItem[1, 0] = "RedBullet";
-        shopItem[2, 0] = "BlueBullet";
-        shopItem[3, 0] = "PurpleBullet";
+        shopItem[0, 0] = "WhiteWool";
+        shopItem[1, 0] = "RedWool";
+        shopItem[2, 0] = "BlueWool";
+        shopItem[3, 0] = "PurpleWool";
 
         shopItem[0, 1] = "300";
         shopItem[1, 1] = "300";
@@ -108,7 +108,7 @@ public class Shop : MonoBehaviour
                                 continue;
 
                             //총알이 아닌 다른 아이템은 item칸에 제일 앞칸(사용중인 총알)에 들어가지 않게 함.
-                            if (!shopItem[i, 0].Contains("Bullet") && a == 0) 
+                            if (!shopItem[i, 0].Contains("Wool") && a == 0) 
                                 continue;
 
                             Item.instance.coin -= int.Parse(shopItem[i, 1]); //코인 차감
@@ -130,10 +130,10 @@ public class Shop : MonoBehaviour
         //페이지를 넘길때 아이템목록과 가격들을 바꾼다.
         if(page == 1)
         {    
-            shopItem[0, 0] = "WhiteBullet";
-            shopItem[1, 0] = "RedBullet";
-            shopItem[2, 0] = "BlueBullet";
-            shopItem[3, 0] = "PurpleBullet";
+            shopItem[0, 0] = "WhiteWool";
+            shopItem[1, 0] = "RedWool";
+            shopItem[2, 0] = "BlueWool";
+            shopItem[3, 0] = "PurpleWool";
             
             shopItem[0, 1] = "300";
             shopItem[1, 1] = "300";

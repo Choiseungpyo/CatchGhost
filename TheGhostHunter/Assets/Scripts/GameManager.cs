@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
     {
         for(int i=0; i< Item.instance.playerItem.Length; i++)
         {
-            if(!Item.instance.playerItem[i].Contains("Bullet")) //유령을 죽일 수 있는 총알을 가지고 있지 않을 경우
+            if(!Item.instance.playerItem[i].Contains("Wool")) //유령을 죽일 수 있는 총알을 가지고 있지 않을 경우
             {                
                 if (i == 5 && Item.instance.coin < 500) //총알을 구입할 수 있는 최소 금액보다 작은 경우
                 {

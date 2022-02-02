@@ -183,16 +183,16 @@ public class Item : MonoBehaviour
 
         switch(itemName)
         {
-            case "WhiteBullet":
+            case "WhiteWool":
                 colorNum = 0;
                 break;
-            case "RedBullet":
+            case "RedWool":
                 colorNum = 1;
                 break;
-            case "BlueBullet":
+            case "BlueWool":
                 colorNum = 2;
                 break;
-            case "PurpleBullet":
+            case "PurpleWool":
                 colorNum = 3;
                 break;
             default:
@@ -215,7 +215,7 @@ public class Item : MonoBehaviour
                 if(clickedBtn.name.Contains((i+1).ToString())) //1,2,3,4,5
                 {
                     //총알인 아이템과만 바뀌도록.
-                    if (ItemImg[i + 1].GetComponent<Image>().sprite.name.Contains("Bullet"))
+                    if (ItemImg[i + 1].GetComponent<Image>().sprite.name.Contains("Wool"))
                     {
                         //Debug.Log("아이템이 바뀌었습니다.");
                         tmpSprite = ItemImg[i + 1].GetComponent<Image>().sprite;
