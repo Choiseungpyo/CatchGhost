@@ -7,8 +7,9 @@ using UnityEngine.SceneManagement;
 public class Ghost : MonoBehaviour
 {
     //프리팹
-    public GameObject GhostPrefabs;
-    
+    public GameObject White_DefaultGhost_Prefabs;
+    public GameObject[] BooBooGhost_Prefabs = new GameObject[3];//0,1,2 :White,Red,Blue
+
 
     //오브젝트
     [HideInInspector]
@@ -71,9 +72,6 @@ public class Ghost : MonoBehaviour
 
             for (int i = 0; i < 3; i++)
             {
-                GhostObj[i] = Instantiate(GhostPrefabs, ghostResetPos[i], Quaternion.identity);
-                GhostObj[i].name = "Ghost" + (i+1).ToString();
-
                 //유령 움직임 
                 ghostMoving[i] = true;
 
@@ -81,11 +79,16 @@ public class Ghost : MonoBehaviour
                 if (TimeController.instance.limitTime >= 50)
                 {
                     ghostColor[i] = 0;
+                    GhostObj[i] = Instantiate(White_DefaultGhost_Prefabs, ghostResetPos[i], Quaternion.identity, transform);               
                 }
                 else
                 {
-                    GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
-                }             
+                    GhostObj[i] = Instantiate(SetRandomGhostColor(i), ghostResetPos[i], Quaternion.identity, transform);
+                }
+                GhostObj[i].name = "Ghost" + (i + 1).ToString();
+
+                //유령 크기
+                ChangeGhostScale(i);
             }
             ghostColor[3] = 3; //보라색 유령
 
@@ -135,8 +138,22 @@ public class Ghost : MonoBehaviour
 
             for (int i = 0; i < 3; i++)
             {
-                GhostObj[i] = Instantiate(GhostPrefabs, ghostResetPos[i], Quaternion.identity);
+                switch(i)
+                {
+                    case 0:
+                        GhostObj[i] = Instantiate(BooBooGhost_Prefabs[0], ghostResetPos[i], Quaternion.identity, transform);                       
+                        break;
+                    case 1:
+                        GhostObj[i] = Instantiate(BooBooGhost_Prefabs[1], ghostResetPos[i], Quaternion.identity, transform);
+                        break;
+                    case 2:
+                        GhostObj[i] = Instantiate(BooBooGhost_Prefabs[2], ghostResetPos[i], Quaternion.identity, transform);
+                        break;
+                }
                 GhostObj[i].name = "Ghost" + (i + 1).ToString();
+
+                //유령 크기
+                ChangeGhostScale(i);
 
                 //유령 움직임 
                 ghostMoving[i] = true;
@@ -144,6 +161,7 @@ public class Ghost : MonoBehaviour
                 //유령 색깔
                 ghostColor[i] =i; //하얀색, 빨간색, 파란색 유령 순으로 Title에서 색깔 고정하도록 함.
             }
+            
             ghostColor[3] = 3; //보라색 유령
 
             //이미지 좌우 반전
@@ -157,12 +175,7 @@ public class Ghost : MonoBehaviour
 
             PurpleGhostObj = null;
             HitEffect = null;
-
-            GhostObj[ghostColor[0]].GetComponent<SpriteRenderer>().color = Color.white;
-            GhostObj[ghostColor[1]].GetComponent<SpriteRenderer>().color = Color.red;
-            GhostObj[ghostColor[2]].GetComponent<SpriteRenderer>().color = Color.blue;
         }
-
     }
 
     private void Start()
@@ -170,7 +183,7 @@ public class Ghost : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Main")
         {
             //보라색 유령 처음에 10초후에 등장시키기
-            Invoke("FirstPurpleGhost", 15);
+            Invoke("FirstPurpleGhost", 3);
         }
     }
 
@@ -228,11 +241,21 @@ public class Ghost : MonoBehaviour
                         {
                             //Main Scene에서만 랜덤 색깔로 바뀌게
                             //Title Scene에서는 색깔 고정
-                            GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+                            Destroy(GhostObj[i]);
+                            GhostObj[i] = Instantiate(SetRandomGhostColor(i), ghostResetPos[i],Quaternion.identity, transform);
+                            GhostObj[i].name = "Ghost" + (i + 1);
+
+                            ChangeGhostScale(i);
+
+                            SetRandomGhostSpeed(i);
+                            StartCoroutine(ActivateGhostMoving(i));
                         }
-                        SetRandomGhostSpeed(i);
-                        GhostObj[i].transform.position = ghostResetPos[i];
-                        StartCoroutine(ActivateGhostMoving(i));
+                        else
+                        {
+                            SetRandomGhostSpeed(i);
+                            GhostObj[i].transform.position = ghostResetPos[i];
+                            StartCoroutine(ActivateGhostMoving(i));
+                        }
                     }  
                     else if(SceneManager.GetActiveScene().name == "Title")
                     {
@@ -251,11 +274,23 @@ public class Ghost : MonoBehaviour
                     {
                         if (TimeController.instance.limitTime <= 50)
                         {
-                            GhostObj[i].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(i);
+                            Destroy(GhostObj[i]);
+                            GhostObj[i] = Instantiate(SetRandomGhostColor(i), ghostResetPos[i], Quaternion.identity, transform);
+                            GhostObj[i].name = "Ghost" + (i+1);
+
+                            ChangeGhostScale(i);
+
+                            GhostObj[i].GetComponent<SpriteRenderer>().flipX = true;
+
+                            SetRandomGhostSpeed(i);
+                            StartCoroutine(ActivateGhostMoving(i));
                         }
-                        SetRandomGhostSpeed(i);
-                        GhostObj[i].transform.position = ghostResetPos[i];
-                        StartCoroutine(ActivateGhostMoving(i));
+                        else
+                        {
+                            SetRandomGhostSpeed(i);
+                            GhostObj[i].transform.position = ghostResetPos[i];
+                            StartCoroutine(ActivateGhostMoving(i));
+                        }
                     }
                     else if(SceneManager.GetActiveScene().name == "Title")
                     {
@@ -285,9 +320,10 @@ public class Ghost : MonoBehaviour
     }
 
 
-    Color SetRandomGhostColor(int ghostNum) //유령의 색깔 랜덤으로 정하기
+    GameObject SetRandomGhostColor(int ghostNum) //유령의 색깔 랜덤으로 정하기
     {
         Color ghostRandomColor;
+        GameObject randomGhostObjrColor = null;
         int ghostColorNum;
 
         ghostColorNum = Random.Range(0, 3); //0:하얀색 1:빨간색 2:파란색
@@ -295,24 +331,28 @@ public class Ghost : MonoBehaviour
         switch (ghostColorNum)
         {
             case 0:
+                randomGhostObjrColor = BooBooGhost_Prefabs[0];
                 ghostRandomColor = Color.white;
                 ghostColor[ghostNum] = 0;
                 break;
             case 1:
+                randomGhostObjrColor = BooBooGhost_Prefabs[1];
                 ghostRandomColor = Color.red;
                 ghostColor[ghostNum] = 1;
                 break;
             case 2:
+                randomGhostObjrColor = BooBooGhost_Prefabs[2];
                 ghostRandomColor = Color.blue;
                 ghostColor[ghostNum] = 2;
                 break;
             default:
+                randomGhostObjrColor = BooBooGhost_Prefabs[0];
                 ghostRandomColor = Color.white;
                 ghostColor[ghostNum] = 0;
                 break;
         }
 
-        return ghostRandomColor;
+        return randomGhostObjrColor;
     }
 
     void SetRandomGhostSpeed(int ghostNum)
@@ -396,7 +436,7 @@ public class Ghost : MonoBehaviour
                 if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
                 {
                     killedGhostCnt += 1;
-                    Item.instance.coin += ghostPrice;
+                    Item.instance.coin += CheckKilledGhostPrice(ghostNum);
                     //Debug.Log("Coin :" + Item.instance.coin);
                     //Debug.Log(hit.collider.name + "을 죽였습니다.");
                     ResetGhostAttribute(ghostNum);
@@ -518,12 +558,62 @@ public class Ghost : MonoBehaviour
         {
             if (TimeController.instance.limitTime <= 50)
             {
-                GhostObj[ghostNum].GetComponent<SpriteRenderer>().color = SetRandomGhostColor(ghostNum);
-            }
+                Destroy(GhostObj[ghostNum]);
+                GhostObj[ghostNum] = Instantiate(SetRandomGhostColor(ghostNum), ghostResetPos[ghostNum], Quaternion.identity, transform);
+                GhostObj[ghostNum].name = "Ghost" + (ghostNum+1);
 
-            SetRandomGhostSpeed(ghostNum);
-            GhostObj[ghostNum].transform.position = ghostResetPos[ghostNum];
+                SetRandomGhostSpeed(ghostNum);
+                ChangeGhostScale(ghostNum);
+
+                if (ghostNum != 1)
+                {
+                    GhostObj[ghostNum].GetComponent<SpriteRenderer>().flipX = true;
+                }
+            }
+            else
+            {
+                SetRandomGhostSpeed(ghostNum);
+                GhostObj[ghostNum].transform.position = ghostResetPos[ghostNum];
+            }   
         }
+    }
+
+    void ChangeGhostScale(int ghostNum) //유령의 크기를 조절한다.(상단에 있는 유령일수록 멀리 있어보이게 크기를 줄인다.);
+    {
+        switch(ghostNum)
+        {
+            case 0:
+                GhostObj[ghostNum].transform.localScale = new Vector3(0.25f, 0.25f, 1);
+                break;
+            case 1:
+                GhostObj[ghostNum].transform.localScale = new Vector3(0.3f, 0.3f, 1);
+                break;
+            case 2:
+                GhostObj[ghostNum].transform.localScale = new Vector3(0.35f, 0.35f, 1);
+                break;
+        }
+    }
+
+    int CheckKilledGhostPrice(int ghostNum) //죽인 유령의 가격을 확인한다.
+    {
+        int ghostPriceContent = 100;
+        switch(ghostNum)
+        {
+            case 0://제일 상단에 있는 유령인 경우
+                ghostPriceContent = 300;
+                break;
+            case 1:
+                ghostPriceContent = 200;
+                break;
+            case 2://제일 하단에 있는 유령인 경우
+                ghostPriceContent = 100;
+                break;
+            default:
+                ghostPriceContent = 100;
+                break;
+        }
+
+        return ghostPriceContent;
     }
 
     //Purple Ghost - 플레이어의 아이템을 뺏는 유령
@@ -553,7 +643,7 @@ public class Ghost : MonoBehaviour
 
         purpleGhostPosIndex = randomIndex;
 
-        return new Vector2(ghostRandomPosSet[randomIndex], -4.3f);
+        return new Vector2(ghostRandomPosSet[randomIndex], -4.05f); //-4.3f
     }
 
 
@@ -611,7 +701,7 @@ public class Ghost : MonoBehaviour
                 if (CheckIfAllTheItemsAreEmpty() == false) //아이템이 하나라도 있을경우 보라색 유령을 움직이게 한다.
                 {
                     //목표 지점 : 사용중인 아이템 위치
-                    pgDestinationPos = new Vector2(2.3f, -4.3f);
+                    pgDestinationPos = new Vector2(2.3f, -4.05f); //-4.3f
                 }
             }
             else if (purpleGhostState == PurpleGhostState.Find)
@@ -746,7 +836,7 @@ public class Ghost : MonoBehaviour
         if (!(SceneManager.GetActiveScene().name == "Main"))
             return;
 
-            if (PurpleGhostObj.transform.position.y > -4.3f)
+            if (PurpleGhostObj.transform.position.y > -4.05f) //-4.3f
         {
             //Collider변경 - 배열 순서는 인스펙터창 순서대로이다.
             PurpleGhostObj.GetComponents<BoxCollider2D>()[0].enabled = true; //콜라이더 범위 : Purple Ghost 전체

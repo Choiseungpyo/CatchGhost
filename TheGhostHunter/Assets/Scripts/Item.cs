@@ -9,7 +9,6 @@ public class Item : MonoBehaviour
 {
     public Button[] ItemCompartmentBtn = new Button[5];
     public Image[] ItemImg = new Image[6];
-
     
     int[] itemCompartmentPosX = new int[5];
 
@@ -143,6 +142,7 @@ public class Item : MonoBehaviour
         }
     }
 
+    //나중에 플레이어 코루틴처럼 바꿔서 더 자연스럽게 열리도록 하기
     IEnumerator OpenItemComaprtmentEffect() //아이템 창을 우->좌로 열리는 효과
     { 
         for (int i = 0; i < 5; i++)

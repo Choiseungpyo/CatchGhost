@@ -584,6 +584,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GhostPrefabs: {fileID: 2327261920695670530, guid: 29f1a025c081a04499f7ec480a854a82,
     type: 3}
+  White_DefaultGhost_Prefabs: {fileID: 2247846323560420079, guid: bde3cc4bf2edc3c4d97283b5d6763156,
+    type: 3}
+  BooBooGhost_Prefabs:
+  - {fileID: 8567704988158887244, guid: d489d39b118be1843aeba7f6ee987cf8, type: 3}
+  - {fileID: 5265617054109535105, guid: 93f5f34cdd62e5e4893b537ce0935091, type: 3}
+  - {fileID: 926839793741207635, guid: e6853387370485444b3eb22f68817596, type: 3}
   GhostObj:
   - {fileID: 0}
   - {fileID: 0}

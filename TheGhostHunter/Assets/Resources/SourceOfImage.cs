@@ -13,3 +13,5 @@ coin : https://opengameart.org/content/coin-icon
 gun point : https://www.pinpng.com/picture/ioRRmR_sniper-rifle-cliparts-reticle-clipart-hd-png-download/
 Other images were produced by me or transformed other people's images.
  */
+
+//2월 1일부터 직접 만든 리소스를 사용하며 출처를 밝히며 사용한 리소스 안쓰려고 변경중
