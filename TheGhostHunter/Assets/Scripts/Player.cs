@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class Player : MonoBehaviour
@@ -17,6 +18,11 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        for(int i=0; i<HpImg.Length; i++)
+        {
+            HpImg[i].SetActive(true);
+        }
+
         LoadHpData();
     }
 
@@ -32,28 +38,28 @@ public class Player : MonoBehaviour
         {
             if(hp == 3) //hp 3
             {
-                HpImg[i].SetActive(true);
+                HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/FullHp");
             }
             else if(hp == 2) //hp 2
             {
-                HpImg[i].SetActive(true);
+                HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/FullHp");
                 if (i == 2)
                 {
-                    HpImg[i].SetActive(false);
+                    HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/WornUpHP");
                     break;
                 }              
             }
             else if(hp == 1)
             {
-                HpImg[i].SetActive(true);
+                HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/FullHp");
                 if (i == 1 || i ==2)
                 {
-                    HpImg[i].SetActive(false);
+                    HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/WornUpHP");
                 }              
             }
             else
             {
-                HpImg[i].SetActive(false);
+                HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/WornUpHP");
             }
         }
     }
