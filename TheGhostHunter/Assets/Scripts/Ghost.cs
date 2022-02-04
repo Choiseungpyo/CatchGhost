@@ -409,7 +409,7 @@ public class Ghost : MonoBehaviour
             if (hit.collider != null)
             {
                 int ghostNum;
-
+                Debug.Log("클릭한 오브젝트 이름 : " + hit.collider.name);
                 ghostNum = returnGhostNum(hit.collider.name);
                 if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
                 {

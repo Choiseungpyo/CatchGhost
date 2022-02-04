@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    public Text killedGhostCnt;
+
     [HideInInspector]
     public int hp = 3;
 
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         SetPlayerHpUI();
+        SetKilledGhostCnt();
     }
 
     void SetPlayerHpUI()
@@ -62,6 +65,11 @@ public class Player : MonoBehaviour
                 HpImg[i].GetComponent<Image>().sprite = Resources.Load<Sprite>("Player/WornUpHP");
             }
         }
+    }
+
+    void SetKilledGhostCnt()
+    {
+        killedGhostCnt.text = Ghost.instance.killedGhostCnt.ToString();
     }
 
     public void SaveHpData()

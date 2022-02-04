@@ -85,7 +85,7 @@ public class Shop : MonoBehaviour
 
     public void BuyItem()
     {
-        GameObject clickedBtn = EventSystem.current.currentSelectedGameObject;
+        GameObject clickedBtn = EventSystem.current.currentSelectedGameObject.transform.GetChild(0).gameObject;
         
         for(int i=0; i<6; i++) //버튼 인덱스 검사
         {

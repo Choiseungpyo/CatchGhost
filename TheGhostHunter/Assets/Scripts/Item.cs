@@ -129,7 +129,7 @@ public class Item : MonoBehaviour
             }           
             else if (itemBtnBV == false)
             {
-                if(Ghost.instance.PurpleGhostObj.transform.position.x >= 3.25 || Ghost.instance.PurpleGhostObj.transform.position.y > -4.3f)
+                if(Ghost.instance.PurpleGhostObj.transform.position.x >= 3.25 || Ghost.instance.PurpleGhostObj.transform.position.y > -4.05f)
                 {
                     itemBtnBV = true;
                     StartCoroutine(CloseItemComaprtmentEffect());
