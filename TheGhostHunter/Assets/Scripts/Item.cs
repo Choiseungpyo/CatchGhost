@@ -195,6 +195,9 @@ public class Item : MonoBehaviour
             case "PurpleWool":
                 colorNum = 3;
                 break;
+            case "BlackWool":
+                colorNum = 4;
+                break;
             default:
                 colorNum = -1; 
                 break;

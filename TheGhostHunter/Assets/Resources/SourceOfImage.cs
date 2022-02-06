@@ -1,4 +1,4 @@
-﻿//앞으로 사용할 이미지 출처
+﻿//이전에 사용한 이미지 출처
 
 /*<source of image>
 Main Scene background : <a href='https://kr.freepik.com/vectors/halloween'>

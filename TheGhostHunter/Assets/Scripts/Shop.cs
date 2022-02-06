@@ -49,13 +49,17 @@ public class Shop : MonoBehaviour
         shopItem[1, 0] = "RedWool";
         shopItem[2, 0] = "BlueWool";
         shopItem[3, 0] = "PurpleWool";
+        shopItem[4, 0] = "BlackWool";
+        shopItem[5, 0] = "empty";
 
         shopItem[0, 1] = "300";
         shopItem[1, 1] = "300";
         shopItem[2, 1] = "300";
         shopItem[3, 1] = "500";
+        shopItem[4, 1] = "500";
+        shopItem[5, 1] = "";
 
-        for(int i =0; i<4; i++)
+        for (int i =0; i< ItemPriceTxt.Length; i++)
         {
             ItemPriceTxt[i].text = shopItem[i, 1];
         }
@@ -134,11 +138,15 @@ public class Shop : MonoBehaviour
             shopItem[1, 0] = "RedWool";
             shopItem[2, 0] = "BlueWool";
             shopItem[3, 0] = "PurpleWool";
-            
+            shopItem[4, 0] = "BlackWool";
+            shopItem[5, 0] = "empty";
+
             shopItem[0, 1] = "300";
             shopItem[1, 1] = "300";
             shopItem[2, 1] = "300";
             shopItem[3, 1] = "500";
+            shopItem[4, 1] = "500";
+            shopItem[5, 1] = "";
         }
         else if(page == 2)
         {
@@ -146,11 +154,15 @@ public class Shop : MonoBehaviour
             shopItem[1, 0] = "IncreaseTime";
             shopItem[2, 0] = "HealPack";
             shopItem[3, 0] = "DoubleCoin";
+            shopItem[4, 0] = "empty";
+            shopItem[5, 0] = "empty";
 
             shopItem[0, 1] = "300";
             shopItem[1, 1] = "300";
             shopItem[2, 1] = "500";
             shopItem[3, 1] = "300";
+            shopItem[4, 1] = "";
+            shopItem[5, 1] = "";
         }
 
         for (int i = 0; i < ItemPriceTxt.Length; i++)
