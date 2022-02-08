@@ -19,12 +19,12 @@ public class TitleGhostText : MonoBehaviour
             if(i==1)
             {
                 GhostNameTxt[i].transform.position = Camera.main.WorldToScreenPoint
-                (Ghost.instance.GhostObj[i].transform.position + new Vector3(-0.2f, 1, 0));
+                (Ghost.instance.GhostObj[i].transform.position + new Vector3(0, 0.7f, 0));
             }
             else
             {
                 GhostNameTxt[i].transform.position = Camera.main.WorldToScreenPoint
-                (Ghost.instance.GhostObj[i].transform.position + new Vector3(0.2f, 1, 0));
+                (Ghost.instance.GhostObj[i].transform.position + new Vector3(0, 0.7f, 0));
             }          
         }   
     }

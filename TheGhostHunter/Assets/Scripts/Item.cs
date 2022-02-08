@@ -38,10 +38,12 @@ public class Item : MonoBehaviour
 
     //Shop Class에서 선언하고 사용하려했지만 데이터 저장때문에 여기서 선언
     [HideInInspector]
-    public int coin = 10000;
+    public int coin = 0;
 
     //Purple Ghost와 아이템 창 여는것 관련
     bool controlPurpleGhostAndItem = true;
+
+
 
     static public Item instance;
     private void Awake()
@@ -101,12 +103,14 @@ public class Item : MonoBehaviour
                 ItemImg[i].gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/"+playerItem[i]);
             }
         }
-          
-        itemCompartmentPosX[0] = 570;
-        itemCompartmentPosX[1] = 350;
-        itemCompartmentPosX[2] = 130;
-        itemCompartmentPosX[3] = -90;
-        itemCompartmentPosX[4] = -310;
+
+        itemCompartmentPosX[0] = 320;
+        itemCompartmentPosX[1] = 190;
+        itemCompartmentPosX[2] = 60;
+        itemCompartmentPosX[3] = -70;
+        itemCompartmentPosX[4] = -200;
+
+      
     }
 
     private void Update()
@@ -144,17 +148,30 @@ public class Item : MonoBehaviour
 
     //나중에 플레이어 코루틴처럼 바꿔서 더 자연스럽게 열리도록 하기
     IEnumerator OpenItemComaprtmentEffect() //아이템 창을 우->좌로 열리는 효과
-    { 
+    {
+        float elapsedTime = 0;
+        float timeToMove = 0.1f;
+
         for (int i = 0; i < 5; i++)
         {
+            elapsedTime = 0;
             ItemCompartmentBtn[i].gameObject.SetActive(true);
             ItemImg[i+1].gameObject.SetActive(true);
-            while (ItemCompartmentBtn[i].transform.localPosition.x > itemCompartmentPosX[i])
+            while (elapsedTime < timeToMove)
             {
-                ItemCompartmentBtn[i].transform.localPosition += new Vector3(-220, 0, 0);
-                ItemImg[i+1].transform.localPosition += new Vector3(-220, 0, 0);
-                yield return new WaitForSeconds(0.05f);
+                ItemCompartmentBtn[i].transform.localPosition = Vector3.Lerp(ItemCompartmentBtn[i].transform.localPosition,
+                                                   new Vector3(itemCompartmentPosX[i],-870,0),
+                                                  (elapsedTime / timeToMove));
+
+                ItemImg[i + 1].transform.localPosition = Vector3.Lerp(ItemImg[i + 1].transform.localPosition,
+                                                   new Vector3(itemCompartmentPosX[i], -870, 0),
+                                                  (elapsedTime / timeToMove));
+
+                elapsedTime += Time.deltaTime;
+                yield return null;
             }
+            ItemCompartmentBtn[i].transform.localPosition = new Vector3(itemCompartmentPosX[i], -870, 0);
+            ItemImg[i + 1].transform.localPosition = new Vector3(itemCompartmentPosX[i], -870, 0);
         }
         usingItemBtn = false;
         controlPurpleGhostAndItem = true;
@@ -162,16 +179,32 @@ public class Item : MonoBehaviour
 
     IEnumerator CloseItemComaprtmentEffect() //아이템 창을 좌->우로 닫히는 효과
     {
+        float elapsedTime = 0;
+        float timeToMove = 0.1f;
+
         for (int i = 4; i >= 0; i--)
         {
-            while (ItemCompartmentBtn[i].transform.localPosition.x < itemCompartmentPosX[i] + 220)
+            elapsedTime = 0;
+
+            while (elapsedTime < timeToMove)
             {
-                ItemCompartmentBtn[i].transform.localPosition += new Vector3(+220, 0, 0);
-                ItemImg[i + 1].transform.localPosition += new Vector3(+220, 0, 0);
-                yield return new WaitForSeconds(0.05f);
+                ItemCompartmentBtn[i].transform.localPosition = Vector3.Lerp(ItemCompartmentBtn[i].transform.localPosition,
+                                                   new Vector3(itemCompartmentPosX[i] + 130, -870, 0),
+                                                  (elapsedTime / timeToMove));
+
+                ItemImg[i + 1].transform.localPosition = Vector3.Lerp(ItemImg[i + 1].transform.localPosition,
+                                                   new Vector3(itemCompartmentPosX[i] + 130, -870, 0),
+                                                  (elapsedTime / timeToMove));
+
+                elapsedTime += Time.deltaTime;
+                yield return null;
             }
+
+            ItemCompartmentBtn[i].transform.localPosition = new Vector3(itemCompartmentPosX[i] + 130, -870, 0);
+            ItemImg[i + 1].transform.localPosition = new Vector3(itemCompartmentPosX[i] + 130, -870, 0);
+
             ItemCompartmentBtn[i].gameObject.SetActive(false);
-            ItemImg[i+1].gameObject.SetActive(false);
+            ItemImg[i + 1].gameObject.SetActive(false);
         }
         usingItemBtn = false;
     }
@@ -385,8 +418,6 @@ public class Item : MonoBehaviour
                 break;
         }
     }
-
-
 
     //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
     //정보 저장 및 로드 함수
