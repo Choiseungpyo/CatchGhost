@@ -597,7 +597,8 @@ MonoBehaviour:
   HitEffect: {fileID: 0}
   ItemPurpleGhostStole: {fileID: 0}
   BlackNeonGhost: {fileID: 0}
-  killedGhostCnt: 0
+  totalKilledGhostCnt: 0
+  killedGhostCnt: 00000000000000000000000000000000000000000000000000000000
   purpleGhostState: 0
   purpleGhostPosIndex: 0
   ghostPrice: 100

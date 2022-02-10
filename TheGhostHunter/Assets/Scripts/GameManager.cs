@@ -127,7 +127,9 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         gameStartCopy = "true";
+        Debug.Log("GameOver");
         Ghost.instance.SaveKilledGhostCntData();
+        
         SaveReasonWhyGameEndedData();
         SceneManager.LoadScene("Ending");
     }

@@ -23,7 +23,10 @@ public class Ghost : MonoBehaviour
 
     //죽인 유령 수
     [HideInInspector]
-    public int killedGhostCnt = 0;
+    public int totalKilledGhostCnt = 0;
+
+    [HideInInspector]
+    public int[] killedGhostCnt = new int[7];   //하얀색기본, 하얀색부우부우, 빨간색부우부우, 파란색부우부우, 보라색, 검정색네온, 노란색 
 
     //유령 제어
     float[] ghostSpeed = new float[3];
@@ -62,6 +65,7 @@ public class Ghost : MonoBehaviour
     private void Awake()
     {
         instance = this;
+
         LoadKilledGhostCntData();
 
         if (SceneManager.GetActiveScene().name == "Main")
@@ -449,7 +453,8 @@ public class Ghost : MonoBehaviour
                 //Debug.Log(hit.collider.name);
                 if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
                 {
-                    killedGhostCnt += 1;
+                    killedGhostCnt[CheckKilledGhostSprite(hit.collider.GetComponent<SpriteRenderer>().sprite.name)] += 1;
+                    totalKilledGhostCnt += 1;
                     Item.instance.coin += CheckKilledGhostPrice(ghostNum);
                     //Debug.Log("Coin :" + Item.instance.coin);
                     //Debug.Log(hit.collider.name + "을 죽였습니다.");
@@ -719,6 +724,39 @@ public class Ghost : MonoBehaviour
         PurpleGhostObj.transform.position = new Vector3(pgCurrentPos[0], pgCurrentPos[1], 0);
     }
 
+    int CheckKilledGhostSprite(string name) //죽인 유령의 이름을 스프라이트 이름으로부터 가져와서 리턴한다.
+    {
+        int ghostNumIndex = 0;
+        switch(name)
+        {
+            case "White_DefaultGhost":
+                ghostNumIndex = 0;
+                break;
+            case "White_BooBooGhost":
+                ghostNumIndex = 1;
+                break;
+            case "Red_BooBooGhost":
+                ghostNumIndex = 2;
+                break;
+            case "Blue_BooBooGhost":
+                ghostNumIndex = 3;
+                break;
+            case "PurpleGhost":
+                ghostNumIndex = 4;
+                break;
+            case "Black_NeonGhost":
+                ghostNumIndex = 5;
+                break;
+            case "YellowGhost":
+                ghostNumIndex = 6;
+                break;
+        }
+
+        Debug.Log("죽인 유령 인덱스 : " + ghostNumIndex);
+        return ghostNumIndex;
+    }
+
+
     //날아와서 대기(코루틴 위) -> 1.5초 (waitforseconds) -> 날아감(코루틴 아래) 
     //날아와서 대기(move함수) -> 1.5초 (Invoke) -> 날아감(move함수)
     //come -> wait -> go
@@ -935,7 +973,7 @@ public class Ghost : MonoBehaviour
     {
         int randomTime;
         randomTime = Random.Range(5,11);
-        Debug.Log(randomTime + "초 후에 네온 재생성");
+        //Debug.Log(randomTime + "초 후에 네온 재생성");
         return randomTime;
     }
 
@@ -956,19 +994,70 @@ public class Ghost : MonoBehaviour
     //데이터 저장 및 로드 
     public void SaveKilledGhostCntData()
     {
-        PlayerPrefs.SetInt("KilledGhostCnt", killedGhostCnt);
+        string tmp = "";
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (i == 0)
+            {
+                tmp += totalKilledGhostCnt.ToString();
+            }
+            else
+            {
+                tmp += killedGhostCnt[i-1].ToString();
+            }
+
+            if (i < 8 - 1)//마지막 전까지 , 로 split할 수 있게 해주기
+            {
+                tmp += ",";
+            }
+        }
+
+        PlayerPrefs.SetString("KilledGhostCnt", tmp);
         PlayerPrefs.Save();
     }
 
     void LoadKilledGhostCntData()
     {
-        if (!PlayerPrefs.HasKey("GameStart"))
+        string tmp = "";
+
+        if (!PlayerPrefs.HasKey("KilledGhostCnt"))
         {
-            killedGhostCnt = PlayerPrefs.GetInt("KilledGhostCnt", 0);
+            PlayerPrefs.SetString("KilledGhostCnt", "0,0,0,0,0,0,0,0"); //순서 : 전체 죽인 유령, 하얀 기본, 하얀부우부우, 빨강, 파랑, 보라, 검정, 노랑 
+            totalKilledGhostCnt = 0;
+
+            for(int i=0; i<killedGhostCnt.Length; i++)
+            {
+                killedGhostCnt[i] = 0;
+            }
         }
         else
         {
-            killedGhostCnt = PlayerPrefs.GetInt("KilledGhostCnt");
+            string[] killedGhostCntCopy = PlayerPrefs.GetString("KilledGhostCnt").Split(',');
+
+            Debug.Log("Load PlayerPrefs.GetString: " + PlayerPrefs.GetString("KilledGhostCnt"));
+
+            for (int i =0; i < 8; i++)
+            {
+                if(i ==0)
+                {
+                    totalKilledGhostCnt = int.Parse(killedGhostCntCopy[i]);
+                    tmp += totalKilledGhostCnt.ToString();
+                }
+                else //i : 1,2,3,4,5,6,7
+                {
+                    killedGhostCnt[i-1] = int.Parse(killedGhostCntCopy[i]);
+                    tmp += killedGhostCntCopy[i];
+                }
+
+                if (i < 8 - 1)//마지막 전까지 , 로 split할 수 있게 해주기
+                {
+                    tmp += ",";
+                }
+            }
+
+            PlayerPrefs.SetString("KilledGhostCnt", tmp);
+            //Debug.Log("Load KilledGhostCnt : " + PlayerPrefs.GetString("KilledGhostCnt")+ " "+ SceneManager.GetActiveScene().name);
         }
     }
 

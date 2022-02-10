@@ -519,6 +519,8 @@ public class Item : MonoBehaviour
             SaveItemData();
             SaveUsingItemRGSData();
             SaveUsingItemIGPData();
+
+            Debug.Log("OpenShop");
             Ghost.instance.SaveKilledGhostCntData();
 
             SceneManager.LoadScene("Shop");
