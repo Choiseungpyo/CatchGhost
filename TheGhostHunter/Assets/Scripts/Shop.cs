@@ -56,14 +56,14 @@ public class Shop : MonoBehaviour
         shopItem[0, 2, 0] = "BlueWool";
         shopItem[0, 3, 0] = "PurpleWool";
         shopItem[0, 4, 0] = "BlackWool";
-        shopItem[0, 5, 0] = "empty";
+        shopItem[0, 5, 0] = "YellowMouseWool";
 
         shopItem[0, 0, 1] = "300";
         shopItem[0, 1, 1] = "300";
         shopItem[0, 2, 1] = "300";
         shopItem[0, 3, 1] = "500";
         shopItem[0, 4, 1] = "500";
-        shopItem[0, 5, 1] = "";
+        shopItem[0, 5, 1] = "500";
 
         shopItem[1, 0, 0] = "ReduceGhostSpeed";
         shopItem[1, 1, 0] = "IncreaseTime";

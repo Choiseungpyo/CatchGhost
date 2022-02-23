@@ -231,6 +231,9 @@ public class Item : MonoBehaviour
             case "BlackWool":
                 colorNum = 4;
                 break;
+            case "YellowMouseWool":
+                colorNum = 5;
+                break;
             default:
                 colorNum = -1; 
                 break;

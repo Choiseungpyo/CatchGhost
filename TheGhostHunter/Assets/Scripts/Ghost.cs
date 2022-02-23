@@ -7,9 +7,8 @@ using UnityEngine.SceneManagement;
 public class Ghost : MonoBehaviour
 {
     //프리팹
-    public GameObject White_DefaultGhost_Prefabs;
+    public GameObject[] DefaultGhost_Prefabs = new GameObject[3]; //0,1,2 :White,Red,Blue
     public GameObject[] BooBooGhost_Prefabs = new GameObject[3];//0,1,2 :White,Red,Blue
-    public GameObject Black_NeonGhost_Prefabs;
 
 
     //오브젝트
@@ -20,19 +19,20 @@ public class Ghost : MonoBehaviour
     public GameObject ItemPurpleGhostStole;
 
     public GameObject BlackNeonGhost;
+    public GameObject YellowGhost;
 
     //죽인 유령 수
     [HideInInspector]
     public int totalKilledGhostCnt = 0;
 
     [HideInInspector]
-    public int[] killedGhostCnt = new int[7];   //하얀색기본, 하얀색부우부우, 빨간색부우부우, 파란색부우부우, 보라색, 검정색네온, 노란색 
+    public int[] killedGhostCnt = new int[9];   //하얀색기본, 빨간색기본, 파란색기본,하얀색부우부우, 빨간색부우부우, 파란색부우부우, 보라색, 검정색네온, 노란색 
 
     //유령 제어
     float[] ghostSpeed = new float[3];
     bool[] ghostMoving = new bool[3]; //Ghost가 움직일 수 있는지 
     Vector3[] ghostResetPos = new Vector3[3];
-    int[] ghostColor = new int[5]; //0:하얀색 1:빨간색 2:파란색 3:보라색 4:검정색
+    int[] ghostColor = new int[6]; //0:하얀색 1:빨간색 2:파란색 3:보라색 4:검정색 5:노란색
 
     //보라색 유령(purple ghost = pg)
     [HideInInspector]
@@ -55,6 +55,10 @@ public class Ghost : MonoBehaviour
     //Black Neon Ghost
     int currentBNGPosIndex = 3;
     bool bngMoving = true;
+
+    //Yellow Ghost
+    int currentYGPosIndex = 3;
+    bool ygMoving = true;
 
     //유령 가격
     [HideInInspector]
@@ -89,7 +93,7 @@ public class Ghost : MonoBehaviour
                 if (TimeController.instance.limitTime >= 50)
                 {
                     ghostColor[i] = 0;
-                    GhostObj[i] = Instantiate(White_DefaultGhost_Prefabs, ghostResetPos[i], Quaternion.identity, transform);               
+                    GhostObj[i] = Instantiate(DefaultGhost_Prefabs[0], ghostResetPos[i], Quaternion.identity, transform);               
                 }
                 else
                 {
@@ -102,6 +106,7 @@ public class Ghost : MonoBehaviour
             }
             ghostColor[3] = 3; //보라색 유령
             ghostColor[4] = 4; //검정색 유령
+            ghostColor[5] = 5; //노란색 유령
 
             //이미지 좌우 반전
             GhostObj[0].GetComponent<SpriteRenderer>().flipX = true;
@@ -200,7 +205,9 @@ public class Ghost : MonoBehaviour
 
             //검정색 네온 유령 5초 후에 등장시키기
             Invoke("ChangeBNGMovingToFalse", 5);
-            //currentBNGPosIndex = SetBNGRandomPosIndex();
+
+            //노란색 유령 5 후에 등장시키기
+            Invoke("ChangeYGMovingToFalse", 2);
         }
     }
 
@@ -212,6 +219,7 @@ public class Ghost : MonoBehaviour
             MoveGhost(); 
             MovePurpleGhost();
             MoveBlackNeonGhost();
+            MoveYellowGhost();
             ChangePurpleGhostCollider();
             KillGhost();
         }
@@ -344,21 +352,31 @@ public class Ghost : MonoBehaviour
         GameObject randomGhostObjrColor = null;
         int ghostColorNum;
 
-        ghostColorNum = Random.Range(0, 3); //0:하얀색 1:빨간색 2:파란색
+        ghostColorNum = Random.Range(0, 5); //0:빨간색 기본 1:파란색 기본 2:하얀색 부우부우 3:빨간색 부우부우 4:파란색 부우부우
 
         switch (ghostColorNum)
         {
             case 0:
+                randomGhostObjrColor = DefaultGhost_Prefabs[1];
+                ghostRandomColor = Color.red;
+                ghostColor[ghostNum] = 1;
+                break;
+            case 1:
+                randomGhostObjrColor = DefaultGhost_Prefabs[2];
+                ghostRandomColor = Color.blue;
+                ghostColor[ghostNum] = 2;
+                break;
+            case 2:
                 randomGhostObjrColor = BooBooGhost_Prefabs[0];
                 ghostRandomColor = Color.white;
                 ghostColor[ghostNum] = 0;
                 break;
-            case 1:
+            case 3:
                 randomGhostObjrColor = BooBooGhost_Prefabs[1];
                 ghostRandomColor = Color.red;
                 ghostColor[ghostNum] = 1;
                 break;
-            case 2:
+            case 4:
                 randomGhostObjrColor = BooBooGhost_Prefabs[2];
                 ghostRandomColor = Color.blue;
                 ghostColor[ghostNum] = 2;
@@ -433,25 +451,25 @@ public class Ghost : MonoBehaviour
                 {
                     if (hit.collider.gameObject.name == "Ghost1")
                     {
-                        Debug.Log("Main Scene 이동");
+                        //Debug.Log("Main Scene 이동");
                         SceneManager.LoadScene("Main");
                         return;
                     }
                     else if (hit.collider.gameObject.name == "Ghost2")
                     {
-                        Debug.Log("Tutorial Scene 이동");
+                        //Debug.Log("Tutorial Scene 이동");
                         SceneManager.LoadScene("Tutorial");
                         return;
                     }
                     else if (hit.collider.gameObject.name == "Ghost3")
                     {
-                        Debug.Log("게임 종료");
+                        //Debug.Log("게임 종료");
                         Application.Quit();
                         return;
                     }
                 }
                 //Debug.Log(hit.collider.name);
-                if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+                if (CompareGhostColorToWool(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
                 {
                     killedGhostCnt[CheckKilledGhostSprite(hit.collider.GetComponent<SpriteRenderer>().sprite.name)] += 1;
                     totalKilledGhostCnt += 1;
@@ -525,7 +543,7 @@ public class Ghost : MonoBehaviour
         //}
     }
 
-    bool CompareGhostColorToBullet(int ghostNum)
+    bool CompareGhostColorToWool(int ghostNum)
     {
         if (Item.instance.ChangeItemStringToInt(Item.instance.playerItem[0]) == ghostColor[ghostNum])
         {
@@ -554,6 +572,9 @@ public class Ghost : MonoBehaviour
             case "BlackGhost":
                 ghostNum = 4;
                 break;
+            case "YellowGhost":
+                ghostNum = 5;
+                break;
             default:
                 ghostNum = -1;
                 break;
@@ -565,12 +586,22 @@ public class Ghost : MonoBehaviour
 
     void ResetGhostAttribute(int ghostNum) //유령이 죽었을 시 유령의 속성값 변경
     {
-        if (ghostNum == 4) //Black Ghost
+        if (ghostNum == 5) //Yellow Ghost
+        {
+            StopCoroutine("ChangeYGPos");
+            CancelInvoke("ChangeYGMovingToFalse");
+            ygMoving = true;
+            YellowGhost.transform.position = new Vector3(0, 6, 1);
+            YellowGhost.transform.SetSiblingIndex(5);
+            Invoke("ChangeYGMovingToFalse", SetYGRandomTimeToAppear());
+        }
+        else if (ghostNum == 4) //Black Ghost
         {
             StopCoroutine("ChangeBNGPos");
             CancelInvoke("ChangeBNGMovingToFalse");
             bngMoving = true;
             BlackNeonGhost.transform.position = new Vector3(0, 6, 1);
+            BlackNeonGhost.transform.SetSiblingIndex(4);
             Invoke("ChangeBNGMovingToFalse", SetBNGRandomTimeToAppear());
         }
         else if (ghostNum == 3) //Purple Ghost
@@ -579,6 +610,7 @@ public class Ghost : MonoBehaviour
             pgMoving = false;
             purpleGhostState = PurpleGhostState.Go;
             PurpleGhostObj.transform.position = new Vector3(4, 0, 0);
+            PurpleGhostObj.transform.SetSiblingIndex(0);
             pgCurrentPos = new Vector2(4, 0);
             controlPGFindMoving = true;
             ItemPurpleGhostStole.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Item/empty");
@@ -638,10 +670,13 @@ public class Ghost : MonoBehaviour
             case 2://제일 하단에 있는 유령인 경우
                 ghostPriceContent = 100;
                 break;
-            case 3://제일 하단에 있는 유령인 경우
+            case 3://보라색유령
                 ghostPriceContent = 300;
                 break;
-            case 4://제일 하단에 있는 유령인 경우
+            case 4://검정색유령
+                ghostPriceContent = 700;
+                break;
+            case 5://노랑색유령
                 ghostPriceContent = 500;
                 break;
             default:
@@ -662,12 +697,12 @@ public class Ghost : MonoBehaviour
         int randomIndex;
         float[] ghostRandomPosSet = new float[6];
 
-        ghostRandomPosSet[5] = -0.9f;
-        ghostRandomPosSet[4] = -0.25f;
-        ghostRandomPosSet[3] = 0.4f;
-        ghostRandomPosSet[2] = 1.05f;
-        ghostRandomPosSet[1] = 1.7f;
-        ghostRandomPosSet[0] = 2.3f;
+        ghostRandomPosSet[5] = -1.05f;
+        ghostRandomPosSet[4] = -0.37f;
+        ghostRandomPosSet[3] = 0.3f;
+        ghostRandomPosSet[2] = 0.98f;
+        ghostRandomPosSet[1] = 1.65f;
+        ghostRandomPosSet[0] = 2.33f;
 
 
         randomIndex = Random.Range(0, 6); //0~5
@@ -732,27 +767,33 @@ public class Ghost : MonoBehaviour
             case "White_DefaultGhost":
                 ghostNumIndex = 0;
                 break;
-            case "White_BooBooGhost":
+            case "Red_DefaultGhost":
                 ghostNumIndex = 1;
                 break;
-            case "Red_BooBooGhost":
+            case "Blue_DefaultGhost":
                 ghostNumIndex = 2;
                 break;
-            case "Blue_BooBooGhost":
+            case "White_BooBooGhost":
                 ghostNumIndex = 3;
                 break;
-            case "PurpleGhost":
+            case "Red_BooBooGhost":
                 ghostNumIndex = 4;
                 break;
-            case "Black_NeonGhost":
+            case "Blue_BooBooGhost":
                 ghostNumIndex = 5;
                 break;
-            case "YellowGhost":
+            case "PurpleGhost":
                 ghostNumIndex = 6;
+                break;
+            case "Black_NeonGhost":
+                ghostNumIndex = 7;
+                break;
+            case "YellowGhost":
+                ghostNumIndex = 8;
                 break;
         }
 
-        Debug.Log("죽인 유령 인덱스 : " + ghostNumIndex);
+        //Debug.Log("죽인 유령 인덱스 : " + ghostNumIndex);
         return ghostNumIndex;
     }
 
@@ -770,7 +811,7 @@ public class Ghost : MonoBehaviour
                 if (CheckIfAllTheItemsAreEmpty() == false) //아이템이 하나라도 있을경우 보라색 유령을 움직이게 한다.
                 {
                     //목표 지점 : 사용중인 아이템 위치
-                    pgDestinationPos = new Vector2(2.3f, -4.05f); //-4.3f
+                    pgDestinationPos = new Vector2(2.33f, -4.05f); //-4.3f
                 }
             }
             else if (purpleGhostState == PurpleGhostState.Find)
@@ -990,13 +1031,86 @@ public class Ghost : MonoBehaviour
     }
 
 
+    //Yellow Ghost
+    //3곳 중 랜덤한 곳에서 나타난다.
+    void MoveYellowGhost()
+    {
+        if (ygMoving == false)
+        {
+            StartCoroutine("ChangeYeloowGhostPos");
+        }
+    }
+
+    IEnumerator ChangeYeloowGhostPos()
+    {
+        Vector3[] ygPos = new Vector3[4];
+        Vector3[] ygScale = new Vector3[3];
+
+        int ygScaleIndex = 0;
+
+        ygPos[0] = new Vector3(0.95f, 0.5f, 0);
+        ygPos[1] = new Vector3(-1.5f, -1.2f, 0);
+        ygPos[2] = new Vector3(0.95f, -2.95f, 0);
+        ygPos[3] = new Vector3(0, 6, 0); //리셋 장소
+
+        ygScale[0] = new Vector3(0.2f, 0.2f, 1);
+        ygScale[1] = new Vector3(0.25f, 0.25f, 1);
+        ygScale[2] = new Vector3(0.3f, 0.3f, 1);
+
+        ygMoving = true;
+
+
+        currentYGPosIndex = SetYGRandomPosIndex(); //나타날 곳을 랜덤으로 정한다.
+
+        ygScaleIndex = currentYGPosIndex;
+
+        YellowGhost.transform.localScale = ygScale[ygScaleIndex];
+        YellowGhost.transform.position = ygPos[currentYGPosIndex];
+
+        yield return new WaitForSeconds(2f);
+
+        YellowGhost.transform.position = ygPos[3]; //화면 바깥으로
+
+        Invoke("ChangeYGMovingToFalse", SetYGRandomTimeToAppear());
+    }
+
+    int SetYGRandomTimeToAppear()
+    {
+        int randomTime;
+        randomTime = Random.Range(3, 5);//7~12초
+
+        return randomTime;
+    }
+
+    void ChangeYGMovingToFalse()
+    {
+        ygMoving = false;
+    }
+
+    int SetYGRandomPosIndex()
+    {
+        int randomIndex = Random.Range(0, 3); //0~2
+
+        if(randomIndex == 1)
+        {
+            YellowGhost.GetComponent<SpriteRenderer>().flipX = true; 
+        }
+        else
+        {
+            YellowGhost.GetComponent<SpriteRenderer>().flipX = false; 
+        }
+
+        return randomIndex;
+    }
+
+
     //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
     //데이터 저장 및 로드 
     public void SaveKilledGhostCntData()
     {
         string tmp = "";
 
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 10; i++)
         {
             if (i == 0)
             {
@@ -1007,7 +1121,7 @@ public class Ghost : MonoBehaviour
                 tmp += killedGhostCnt[i-1].ToString();
             }
 
-            if (i < 8 - 1)//마지막 전까지 , 로 split할 수 있게 해주기
+            if (i < 10 - 1)//마지막 전까지 , 로 split할 수 있게 해주기
             {
                 tmp += ",";
             }
@@ -1023,7 +1137,7 @@ public class Ghost : MonoBehaviour
 
         if (!PlayerPrefs.HasKey("KilledGhostCnt"))
         {
-            PlayerPrefs.SetString("KilledGhostCnt", "0,0,0,0,0,0,0,0"); //순서 : 전체 죽인 유령, 하얀 기본, 하얀부우부우, 빨강, 파랑, 보라, 검정, 노랑 
+            PlayerPrefs.SetString("KilledGhostCnt", "0,0,0,0,0,0,0,0,0,0"); //순서 : 전체 죽인 유령, 하얀 기본, 빨간 기본, 파란 기본, 하얀부우부우, 빨강, 파랑, 보라, 검정, 노랑 
             totalKilledGhostCnt = 0;
 
             for(int i=0; i<killedGhostCnt.Length; i++)
@@ -1035,22 +1149,22 @@ public class Ghost : MonoBehaviour
         {
             string[] killedGhostCntCopy = PlayerPrefs.GetString("KilledGhostCnt").Split(',');
 
-            Debug.Log("Load PlayerPrefs.GetString: " + PlayerPrefs.GetString("KilledGhostCnt"));
+            //Debug.Log("Load PlayerPrefs.GetString: " + PlayerPrefs.GetString("KilledGhostCnt"));
 
-            for (int i =0; i < 8; i++)
+            for (int i =0; i < killedGhostCntCopy.Length; i++)
             {
                 if(i ==0)
                 {
                     totalKilledGhostCnt = int.Parse(killedGhostCntCopy[i]);
                     tmp += totalKilledGhostCnt.ToString();
                 }
-                else //i : 1,2,3,4,5,6,7
+                else //i : 1,2,3,4,5,6,7,8,9
                 {
                     killedGhostCnt[i-1] = int.Parse(killedGhostCntCopy[i]);
                     tmp += killedGhostCntCopy[i];
                 }
 
-                if (i < 8 - 1)//마지막 전까지 , 로 split할 수 있게 해주기
+                if (i < killedGhostCntCopy.Length - 1)//마지막 전까지 , 로 split할 수 있게 해주기
                 {
                     tmp += ",";
                 }

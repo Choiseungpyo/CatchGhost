@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
 
     void SetKilledGhostCnt()
     {
-        killedGhostCnt.text = Ghost.instance.killedGhostCnt.ToString();
+        killedGhostCnt.text = Ghost.instance.killedGhostCnt[0].ToString();
     }
 
     public void SaveHpData()

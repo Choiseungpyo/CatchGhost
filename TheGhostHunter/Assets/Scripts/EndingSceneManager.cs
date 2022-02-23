@@ -8,7 +8,7 @@ public class EndingSceneManager : MonoBehaviour
 {
     public Text totalKilledGhostTxt;
     public Text reasonWhyGameEndedTxt;
-    public Text[] killedGhostCntTxt = new Text[7]; //하얀색기본, 하얀색부우부우, 빨간색부우부우, 파란색부우부우, 보라색, 검정색네온, 노란색 
+    public Text[] killedGhostCntTxt = new Text[9]; //하얀색기본, 빨간색기본, 파란색기본,하얀색부우부우, 빨간색부우부우, 파란색부우부우, 보라색, 검정색네온, 노란색 
 
     private void Start()
     {
@@ -33,12 +33,12 @@ public class EndingSceneManager : MonoBehaviour
     {
         int[] killedGhost = Ghost.instance.killedGhostCnt;
 
-        Debug.Log(Ghost.instance.totalKilledGhostCnt);
-        totalKilledGhostTxt.text = "Killed Ghost: " + Ghost.instance.totalKilledGhostCnt.ToString(); 
+        //Debug.Log(Ghost.instance.totalKilledGhostCnt);
+        totalKilledGhostTxt.text = "Killed Ghost : " + Ghost.instance.totalKilledGhostCnt.ToString(); 
 
         for(int i=0; i < killedGhost.Length; i++)
         {
-            killedGhostCntTxt[i].text = killedGhost[i].ToString();
+            killedGhostCntTxt[i].text = ": " + killedGhost[i].ToString();
         }
     }
 

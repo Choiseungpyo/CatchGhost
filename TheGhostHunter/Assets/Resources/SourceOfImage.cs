@@ -15,3 +15,5 @@ Other images were produced by me or transformed other people's images.
  */
 
 //2월 1일부터 직접 만든 리소스를 사용하며 출처를 밝히며 사용한 리소스 안쓰려고 변경중
+
+//폰트 :Sandoll 삼립호빵체 : https://spcsamlip.co.kr/sandoll-samlip-hopang/

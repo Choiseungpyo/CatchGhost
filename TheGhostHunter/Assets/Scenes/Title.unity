@@ -178,7 +178,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 7d583866e4fad6f45a07d5902b2ff72a, type: 3}
     m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
@@ -457,7 +457,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 7d583866e4fad6f45a07d5902b2ff72a, type: 3}
     m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
@@ -582,8 +582,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c036e6a0e27a3429546d1043e815ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  White_DefaultGhost_Prefabs: {fileID: 2247846323560420079, guid: bde3cc4bf2edc3c4d97283b5d6763156,
-    type: 3}
+  DefaultGhost_Prefabs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   BooBooGhost_Prefabs:
   - {fileID: 8567704988158887244, guid: d489d39b118be1843aeba7f6ee987cf8, type: 3}
   - {fileID: 5265617054109535105, guid: 93f5f34cdd62e5e4893b537ce0935091, type: 3}
@@ -598,7 +600,7 @@ MonoBehaviour:
   ItemPurpleGhostStole: {fileID: 0}
   BlackNeonGhost: {fileID: 0}
   totalKilledGhostCnt: 0
-  killedGhostCnt: 00000000000000000000000000000000000000000000000000000000
+  killedGhostCnt: 000000000000000000000000000000000000000000000000000000000000000000000000
   purpleGhostState: 0
   purpleGhostPosIndex: 0
   ghostPrice: 100
@@ -689,7 +691,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 7d583866e4fad6f45a07d5902b2ff72a, type: 3}
     m_FontSize: 100
     m_FontStyle: 0
     m_BestFit: 0
@@ -929,7 +931,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 7d583866e4fad6f45a07d5902b2ff72a, type: 3}
     m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
