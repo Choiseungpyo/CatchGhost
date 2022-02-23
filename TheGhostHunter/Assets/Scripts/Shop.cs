@@ -72,10 +72,10 @@ public class Shop : MonoBehaviour
         shopItem[1, 4, 0] = "empty";
         shopItem[1, 5, 0] = "empty";
 
-        shopItem[1, 0, 1] = "300";
-        shopItem[1, 1, 1] = "300";
-        shopItem[1, 2, 1] = "500";
-        shopItem[1, 3, 1] = "300";
+        shopItem[1, 0, 1] = "7000";
+        shopItem[1, 1, 1] = "1200";
+        shopItem[1, 2, 1] = "1000";
+        shopItem[1, 3, 1] = "700";
         shopItem[1, 4, 1] = "";
         shopItem[1, 5, 1] = "";
 
@@ -253,7 +253,7 @@ public class Shop : MonoBehaviour
                     // 드래그한 아이템이 쓰레기통에 위치한 채 마우스에서 손을 떼었을 경우
 
                     //해당 아이템 원래 가격 - 200의 돈을 Money에 넣어준다.
-                    Item.instance.coin += ReturnClickedItemPrice(ClickedItem.GetComponent<Image>().sprite.name) - 200; //원래 아이템 가격 - 200
+                    Item.instance.coin += ReturnClickedItemPrice(ClickedItem.GetComponent<Image>().sprite.name); //원래 아이템 가격
                     Item.instance.playerItem[int.Parse(ClickedItem.name.Split('g')[1])] = "empty";
                     // 해당 아이템 빈칸으로
                     ClickedItem.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/empty");

@@ -339,8 +339,6 @@ public class Item : MonoBehaviour
     {
         Debug.Log("Increase Ghost Price");
         usingItemIGP = true;
-        Debug.Log("ReduceGhostSpeed");
-        Ghost.instance.ghostPrice = 200;
     }
 
     void CalculateTimeToIGP() //IncreaseGhostPrice = IGP

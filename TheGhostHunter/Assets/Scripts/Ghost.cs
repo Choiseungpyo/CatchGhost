@@ -684,6 +684,11 @@ public class Ghost : MonoBehaviour
                 break;
         }
 
+        if(Item.instance.usingItemIGP) //Double Coin 아이템을 사용하였을 경우 (유령 가격 2배)
+        {
+            ghostPriceContent *= 2;
+        }
+
         return ghostPriceContent;
     }
 
