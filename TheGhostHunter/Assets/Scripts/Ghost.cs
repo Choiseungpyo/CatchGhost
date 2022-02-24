@@ -203,11 +203,11 @@ public class Ghost : MonoBehaviour
             //보라색 유령 처음에 10초후에 등장시키기
             Invoke("FirstPurpleGhost", 10);
 
-            //검정색 네온 유령 5초 후에 등장시키기
-            Invoke("ChangeBNGMovingToFalse", 5);
+            //검정색 네온 유령 7초 후에 등장시키기
+            Invoke("ChangeBNGMovingToFalse", 7);
 
             //노란색 유령 5 후에 등장시키기
-            Invoke("ChangeYGMovingToFalse", 2);
+            Invoke("ChangeYGMovingToFalse", 5);
         }
     }
 
@@ -438,109 +438,155 @@ public class Ghost : MonoBehaviour
 
     void KillGhost()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(pos, transform.forward, 0f);
-            if (hit.collider != null)
-            {
-                int ghostNum;
-                //Debug.Log("클릭한 오브젝트 이름 : " + hit.collider.name);
-                ghostNum = returnGhostNum(hit.collider.name);
-                if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
-                {
-                    if (hit.collider.gameObject.name == "Ghost1")
-                    {
-                        //Debug.Log("Main Scene 이동");
-                        SceneManager.LoadScene("Main");
-                        return;
-                    }
-                    else if (hit.collider.gameObject.name == "Ghost2")
-                    {
-                        //Debug.Log("Tutorial Scene 이동");
-                        SceneManager.LoadScene("Tutorial");
-                        return;
-                    }
-                    else if (hit.collider.gameObject.name == "Ghost3")
-                    {
-                        //Debug.Log("게임 종료");
-                        Application.Quit();
-                        return;
-                    }
-                }
-                //Debug.Log(hit.collider.name);
-                if (CompareGhostColorToWool(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
-                {
-                    killedGhostCnt[CheckKilledGhostSprite(hit.collider.GetComponent<SpriteRenderer>().sprite.name)] += 1;
-                    totalKilledGhostCnt += 1;
-                    Item.instance.coin += CheckKilledGhostPrice(ghostNum);
-                    //Debug.Log("Coin :" + Item.instance.coin);
-                    //Debug.Log(hit.collider.name + "을 죽였습니다.");
-                    ResetGhostAttribute(ghostNum);
-                }
-                else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
-                {
-                    StartCoroutine("ViewHitEffect");
-                    Player.instance.hp -= 1;
-                    //Debug.Log("Hp :" + Player.instance.hp);
-                }
-            }
-        }
-
-
-        //모바일 터치 
-        //if (Input.touchCount > 0)
+        //if (Input.GetMouseButtonDown(0))
         //{
-        //    Touch touch = Input.GetTouch(0);
-
-        //    if (touch.phase == TouchPhase.Began)
+        //    Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    RaycastHit2D hit = Physics2D.Raycast(pos, transform.forward, 0f);
+        //    if (hit.collider != null)
         //    {
-        //        Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //        RaycastHit2D hit = Physics2D.Raycast(pos, transform.forward, 0f);
-        //        if (hit.collider != null)
+        //        int ghostNum;
+        //        //Debug.Log("클릭한 오브젝트 이름 : " + hit.collider.name);
+        //        ghostNum = returnGhostNum(hit.collider.name);
+        //        if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
         //        {
-        //            int ghostNum;
-        //            //Debug.Log("클릭한 오브젝트 이름 : " + hit.collider.name);
-        //            ghostNum = returnGhostNum(hit.collider.name);
-        //            if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
+        //            if (hit.collider.gameObject.name == "Ghost1")
         //            {
-        //                if (hit.collider.gameObject.name == "Ghost1")
-        //                {
-        //                    Debug.Log("Main Scene 이동");
-        //                    SceneManager.LoadScene("Main");
-        //                    return;
-        //                }
-        //                else if (hit.collider.gameObject.name == "Ghost2")
-        //                {
-        //                    Debug.Log("Tutorial Scene 이동");
-        //                    SceneManager.LoadScene("Tutorial");
-        //                    return;
-        //                }
-        //                else if (hit.collider.gameObject.name == "Ghost3")
-        //                {
-        //                    Debug.Log("게임 종료");
-        //                    Application.Quit();
-        //                    return;
-        //                }
+        //                //사운드
+        //                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+
+        //                //Debug.Log("Main Scene 이동");
+        //                Invoke("LoadStartGame", 0.5f);
+        //                return;
         //            }
-        //            //Debug.Log(hit.collider.name);
-        //            if (CompareGhostColorToBullet(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+        //            else if (hit.collider.gameObject.name == "Ghost2")
         //            {
-        //                killedGhostCnt += 1;
-        //                Item.instance.coin += CheckKilledGhostPrice(ghostNum);
-        //                //Debug.Log("Coin :" + Item.instance.coin);
-        //                //Debug.Log(hit.collider.name + "을 죽였습니다.");
-        //                ResetGhostAttribute(ghostNum);
+        //                //사운드
+        //                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+
+        //                //Debug.Log("Tutorial Scene 이동");
+        //                Invoke("LoadTutorial", 0.5f);
+        //                return;
         //            }
-        //            else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+        //            else if (hit.collider.gameObject.name == "Ghost3")
         //            {
-        //                StartCoroutine("ViewHitEffect");
-        //                Player.instance.hp -= 1;
-        //                //Debug.Log("Hp :" + Player.instance.hp);
+        //                //사운드
+        //                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+
+        //                //Debug.Log("게임 종료");
+        //                Invoke("LoadQuitGame", 0.5f);
+        //                return;
         //            }
+        //        }
+        //        //Debug.Log(hit.collider.name);
+        //        if (CompareGhostColorToWool(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+        //        {
+        //            //사운드
+        //            if (ghostNum == 5) //고양이
+        //            {
+        //                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Cat"));
+        //            }
+        //            else
+        //            {
+        //                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+        //            }
+
+        //            killedGhostCnt[CheckKilledGhostSprite(hit.collider.GetComponent<SpriteRenderer>().sprite.name)] += 1;
+        //            totalKilledGhostCnt += 1;
+        //            Item.instance.coin += CheckKilledGhostPrice(ghostNum);
+        //            //Debug.Log("Coin :" + Item.instance.coin);
+        //            //Debug.Log(hit.collider.name + "을 죽였습니다.");
+        //            ResetGhostAttribute(ghostNum);
+        //        }
+        //        else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+        //        {
+        //            //사운드
+        //            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Hit"));
+
+        //            StartCoroutine("ViewHitEffect");
+        //            Player.instance.hp -= 1;
+        //            //Debug.Log("Hp :" + Player.instance.hp);
         //        }
         //    }
         //}
+
+
+        //모바일 터치 
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(pos, transform.forward, 0f);
+                if (hit.collider != null)
+                {
+                    int ghostNum;
+                    //Debug.Log("클릭한 오브젝트 이름 : " + hit.collider.name);
+                    ghostNum = returnGhostNum(hit.collider.name);
+                    if (SceneManager.GetActiveScene().name == "Title") //Title에서는 총알 색깔 상관없이 유령 쏘면 죽도록 함.
+                    {
+                        if (hit.collider.gameObject.name == "Ghost1")
+                        {
+                            //사운드
+                            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+
+                            //Debug.Log("Main Scene 이동");
+                            Invoke("LoadStartGame", 0.5f);
+                            return;
+                        }
+                        else if (hit.collider.gameObject.name == "Ghost2")
+                        {
+                            //사운드
+                            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+
+                            //Debug.Log("Tutorial Scene 이동");
+                            Invoke("LoadTutorial", 0.5f);
+                            return;
+                        }
+                        else if (hit.collider.gameObject.name == "Ghost3")
+                        {
+                            //사운드
+                            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+
+                            //Debug.Log("게임 종료");
+                            Invoke("LoadQuitGame", 0.5f);
+                            return;
+                        }
+                    }
+                    //Debug.Log(hit.collider.name);
+                    if (CompareGhostColorToWool(ghostNum) == true) //총알과 유령이 색깔이 같을 경우
+                    {
+                        //사운드
+                        if (ghostNum == 5) //고양이
+                        {
+                            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Cat"));
+                        }
+                        else
+                        {
+                            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Attack"));
+                        }
+
+                        killedGhostCnt[CheckKilledGhostSprite(hit.collider.GetComponent<SpriteRenderer>().sprite.name)] += 1;
+                        totalKilledGhostCnt += 1;
+                        Item.instance.coin += CheckKilledGhostPrice(ghostNum);
+                        //Debug.Log("Coin :" + Item.instance.coin);
+                        //Debug.Log(hit.collider.name + "을 죽였습니다.");
+                        ResetGhostAttribute(ghostNum);
+                    }
+                    else //총알과 유령의 색깔이 다를 경우 -> Hp 1 감소
+                    {
+                        //사운드
+                        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Hit"));
+
+                        StartCoroutine("ViewHitEffect");
+                        Player.instance.hp -= 1;
+                        //Debug.Log("Hp :" + Player.instance.hp);
+                    }
+                }
+
+            }
+        }
     }
 
     bool CompareGhostColorToWool(int ghostNum)
@@ -1018,7 +1064,7 @@ public class Ghost : MonoBehaviour
     int SetBNGRandomTimeToAppear()
     {
         int randomTime;
-        randomTime = Random.Range(5,11);
+        randomTime = Random.Range(5,9); //5~8초
         //Debug.Log(randomTime + "초 후에 네온 재생성");
         return randomTime;
     }
@@ -1082,7 +1128,7 @@ public class Ghost : MonoBehaviour
     int SetYGRandomTimeToAppear()
     {
         int randomTime;
-        randomTime = Random.Range(3, 5);//7~12초
+        randomTime = Random.Range(7, 13);//7~12초
 
         return randomTime;
     }
@@ -1180,6 +1226,20 @@ public class Ghost : MonoBehaviour
         }
     }
 
+    //씬 이동
+    void LoadQuitGame()
+    {
+        Application.Quit();
+    }
 
+    void LoadTutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
+    }
 
-    }//End Class
+    void LoadStartGame()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
+}//End Class

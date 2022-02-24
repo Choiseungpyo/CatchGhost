@@ -256,6 +256,9 @@ public class Item : MonoBehaviour
                     //총알인 아이템과만 바뀌도록.
                     if (ItemImg[i + 1].GetComponent<Image>().sprite.name.Contains("Wool"))
                     {
+                        //사운드
+                        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Click"));
+
                         //Debug.Log("아이템이 바뀌었습니다.");
                         tmpSprite = ItemImg[i + 1].GetComponent<Image>().sprite;
                         ItemImg[i + 1].GetComponent<Image>().sprite = ItemImg[0].sprite;
@@ -390,7 +393,9 @@ public class Item : MonoBehaviour
             case "ReduceGhostSpeed":
                 if(usingItemRGS == false) //사용중이 아닌 경우
                 {
-                    //나중에 효과 넣기 
+                    //사운드
+                    SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("UseItem"));
+
                     clickedBtn.GetComponent<Image>().color = orangeColor;
                     //사용중인 경우 사용중이라는 Effect 띄우기
                     usingItemRGSIndex = usingItemIndex;
@@ -399,20 +404,27 @@ public class Item : MonoBehaviour
 
                 break;
             case "IncreaseTime":
-                    IncreaseTime();      
+                //사운드
+                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("UseItem"));
+
+                IncreaseTime();      
                 break;
             case "HealPack":
                 if (Player.instance.hp <= 2) //Hp가 닳아있는 상태만 HealPack사용가능하게 함.
                 {
+                    //사운드
+                    SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("UseItem"));
+
                     IncreaseHp();
                 }
                 break;
             case "DoubleCoin":
                 if (usingItemIGP == false) //사용중이 아닌 경우
                 {
+                    //사운드
+                    SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("UseItem"));
+
                     clickedBtn.GetComponent<Image>().color = orangeColor;
-                    //나중에 효과 넣기 
-                    //사용중인 경우 사용중이라는 Effect 띄우기
                     usingItemIGPIndex = usingItemIndex;
                     IncreaseGhostPrice();
                 }             
@@ -433,7 +445,7 @@ public class Item : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("Coin"))
         {
-            coin = PlayerPrefs.GetInt("Coin", 10000);
+            coin = PlayerPrefs.GetInt("Coin", 0);
         }
         else
         {
@@ -512,6 +524,9 @@ public class Item : MonoBehaviour
     {
         if (Ghost.instance.PurpleGhostObj.transform.position.x >= 3.25 || Ghost.instance.PurpleGhostObj.transform.position.x <= -3.25) //Purple Ghost가 나타나 있지 않아야한다.
         {
+            //사운드
+            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Click"));
+
             //모든 데이터 Shop 이동 전에 저장하기
             Player.instance.SaveHpData();
             TimeController.instance.SaveTimeData();
@@ -524,10 +539,14 @@ public class Item : MonoBehaviour
             Debug.Log("OpenShop");
             Ghost.instance.SaveKilledGhostCntData();
 
-            SceneManager.LoadScene("Shop");
+            Invoke("LoadShop", 0.5f);
         }
     }
 
+    void LoadShop()
+    {
+        SceneManager.LoadScene("Shop");
+    }
 
 
 }//End Class

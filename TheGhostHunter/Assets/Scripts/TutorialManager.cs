@@ -36,8 +36,10 @@ public class TutorialManager : MonoBehaviour
 
     public void MovePage()
     {
-       
-        if(EventSystem.current.currentSelectedGameObject.name.Contains("next"))
+        //사운드
+        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("NextPage"));
+
+        if (EventSystem.current.currentSelectedGameObject.name.Contains("next"))
         {
             currentPage += 1;
         }
@@ -48,7 +50,7 @@ public class TutorialManager : MonoBehaviour
 
         if(currentPage <= 0 || currentPage >= 8)
         {
-            SceneManager.LoadScene("Title");
+            Invoke("LoadTitle", 0.5f);
         }
 
 
@@ -174,7 +176,7 @@ public class TutorialManager : MonoBehaviour
 
             case 4:
                 //보라색 유령
-                ghostContent = "정보 : 아이템을 훔쳐가는 \n          유령\n" +
+                ghostContent = "정보 : 아이템을 \n          훔쳐가는 유령\n" +
                               "색깔 : 보라색\n" +
                               "장소 : 아이템 창\n" +
                               "가격 : 300";
@@ -190,7 +192,7 @@ public class TutorialManager : MonoBehaviour
                 GhostImg[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Ghost/BlackNeonGhost_2");
 
                 //노란색 유령
-                ghostContent = "정보 : 돈을 많이 \n          좋아하는 유령\n" +
+                ghostContent = "정보 : 돈을 밝히는 유령\n" +
                               "색깔 : 노란색\n" +
                               "장소 : 땅\n" +
                               "가격 : 500";
@@ -199,6 +201,11 @@ public class TutorialManager : MonoBehaviour
                 break;
 
         }
+    }
+
+    void LoadTitle()
+    {
+        SceneManager.LoadScene("Title");
     }
 
 }//End Class

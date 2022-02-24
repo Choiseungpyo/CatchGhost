@@ -72,7 +72,7 @@ public class Shop : MonoBehaviour
         shopItem[1, 4, 0] = "empty";
         shopItem[1, 5, 0] = "empty";
 
-        shopItem[1, 0, 1] = "7000";
+        shopItem[1, 0, 1] = "700";
         shopItem[1, 1, 1] = "1200";
         shopItem[1, 2, 1] = "1000";
         shopItem[1, 3, 1] = "700";
@@ -99,21 +99,31 @@ public class Shop : MonoBehaviour
         {
             CoinText.text = Item.instance.coin.ToString();
 
-            SelectItem();
+            //SelectItem();
             MoveClickedItem();
         }
+
+        //Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
     }
 
     //Open Shop은 Item Class에서 진행
     public void CloseShop()
     {
+        //사운드
+        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Click"));
+
         Item.instance.SaveItemData();
         Item.instance.SaveCoinData();
         Item.instance.SaveUsingItemRGSData();
         Item.instance.SaveUsingItemIGPData();
-        SceneManager.LoadScene("Main");
+
+        Invoke("LoadMain", 0.5f);
     }
 
+    void LoadMain()
+    {
+        SceneManager.LoadScene("Main");
+    }
 
     public void BuyItem()
     {
@@ -142,6 +152,9 @@ public class Shop : MonoBehaviour
                             //총알이 아닌 다른 아이템은 item칸에 제일 앞칸(사용중인 총알)에 들어가지 않게 함.
                             if (!shopItem[page, i, 0].Contains("Wool") && a == 0) 
                                 continue;
+
+                            //사운드
+                            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("BuyItem"));
 
                             Item.instance.coin -= int.Parse(shopItem[page, i, 1]); //코인 차감
 
@@ -182,6 +195,8 @@ public class Shop : MonoBehaviour
     {
         if(page == 0)
         {
+            //사운드
+            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("NextPage"));
             PreviousPageBtn.SetActive(true);
             NextPageBtn.SetActive(false);
             ++page;
@@ -193,6 +208,8 @@ public class Shop : MonoBehaviour
     {
         if (page == 1)
         {
+            //사운드
+            SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("NextPage"));
             PreviousPageBtn.SetActive(false);
             NextPageBtn.SetActive(true);
             --page;
@@ -210,29 +227,79 @@ public class Shop : MonoBehaviour
     //  - 드래그가 끝났을 때 휴지통의 위치라면 되팔기 + 아이템 없애기
     //  - 드래그가 끝났을 때 휴지통의 위치가 아니라면 원래 아이템의 위치로 되돌리기
 
-    void SelectItem()
+    public void DownPointer()
     {
-        if (isCliked)
-            return;
-
-        for (int i = 0; i < itemPos.Length; i++)
+        switch(EventSystem.current.currentSelectedGameObject.name)
         {
-            if (Input.mousePosition.x - 540 >= itemPos[i].x - 50 && Input.mousePosition.x - 540 <= itemPos[i].x + 50)
+            case "UsingItemBtn":
+                ClickedItem = GameObject.Find("itemImg0");
+                break;
+            case "ItemBtn1":
+                ClickedItem = GameObject.Find("itemImg1");
+                break;
+            case "ItemBtn2":
+                ClickedItem = GameObject.Find("itemImg2");
+                break;
+            case "ItemBtn3":
+                ClickedItem = GameObject.Find("itemImg3");
+                break;
+            case "ItemBtn4":
+                ClickedItem = GameObject.Find("itemImg4");
+                break;
+            case "ItemBtn5":
+                ClickedItem = GameObject.Find("itemImg5");
+                break;
+        }
+
+        isCliked = true;
+        Debug.Log("드래그 시작");
+    }
+
+    public void ExitPointer()
+    {
+        //if (Input.mousePosition.x - 540 >= -50 && Input.mousePosition.x - 540 <= 50)
+        //{
+        //    if (Input.mousePosition.y - 960 >= -600 - 50 && Input.mousePosition.y - 960 <= -600 + 50)
+        //    {
+        //        // 드래그한 아이템이 쓰레기통에 위치한 채 마우스에서 손을 떼었을 경우
+
+        //        //사운드
+        //        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("SellItem"));
+
+        //        //해당 아이템 원래 가격 - 200의 돈을 Money에 넣어준다.
+        //        Item.instance.coin += ReturnClickedItemPrice(ClickedItem.GetComponent<Image>().sprite.name); //원래 아이템 가격
+        //        Item.instance.playerItem[int.Parse(ClickedItem.name.Split('g')[1])] = "empty";
+        //        // 해당 아이템 빈칸으로
+        //        ClickedItem.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/empty");
+        //    }
+        //}
+        //ClickedItem.transform.localPosition = itemPos[int.Parse(ClickedItem.name.Split('g')[1])];
+        //ClickedItem = null;
+        //isCliked = false;
+
+        //Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 pos = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+
+        if (pos.x >= -0.5 && pos.x <= 0.5)
+        {
+            if (pos.y >= -3.5 && pos.y <= -2.5)
             {
-                if (Input.mousePosition.y - 960 >= itemPos[i].y - 60 && Input.mousePosition.y - 960 <= itemPos[i].y + 60)
-                {
-                    // 현재 마우스가 아이템 칸에 있다는 뜻
-                    //Debug.Log(i +" : " + (Input.mousePosition + new Vector3(-540, -960, 0)));
-                    if (Input.GetMouseButtonDown(0) && GameObject.Find("itemImg" + i.ToString()).GetComponent<Image>().sprite.name != "empty")
-                    {
-                        ClickedItem = GameObject.Find("itemImg" + i.ToString());
-                        isCliked = true;
-                        Debug.Log("마우스 누르는 중 ");
-                        break;                    }
-                   
-                }
+                // 드래그한 아이템이 쓰레기통에 위치한 채 마우스에서 손을 떼었을 경우
+
+                //사운드
+                SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("SellItem"));
+
+                //해당 아이템 원래 가격 - 200의 돈을 Money에 넣어준다.
+                Item.instance.coin += ReturnClickedItemPrice(ClickedItem.GetComponent<Image>().sprite.name); //원래 아이템 가격
+                Item.instance.playerItem[int.Parse(ClickedItem.name.Split('g')[1])] = "empty";
+                // 해당 아이템 빈칸으로
+                ClickedItem.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/empty");
             }
         }
+
+        ClickedItem.transform.localPosition = itemPos[int.Parse(ClickedItem.name.Split('g')[1])];
+        ClickedItem = null;
+        isCliked = false;
     }
 
     void MoveClickedItem()
@@ -240,30 +307,9 @@ public class Shop : MonoBehaviour
         if (isCliked == false)
             return;
 
-        ClickedItem.transform.position = Input.mousePosition;
+        //ClickedItem.transform.position = Input.mousePosition;
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            
-            Debug.Log("마우스 뗌 ");
-            if(Input.mousePosition.x - 540 >= -50 && Input.mousePosition.x -540 <=  50)
-            {
-                if(Input.mousePosition.y - 960 >= -600 - 50 && Input.mousePosition.y - 960 <= -600 + 50)
-                {
-                    // 드래그한 아이템이 쓰레기통에 위치한 채 마우스에서 손을 떼었을 경우
-
-                    //해당 아이템 원래 가격 - 200의 돈을 Money에 넣어준다.
-                    Item.instance.coin += ReturnClickedItemPrice(ClickedItem.GetComponent<Image>().sprite.name); //원래 아이템 가격
-                    Item.instance.playerItem[int.Parse(ClickedItem.name.Split('g')[1])] = "empty";
-                    // 해당 아이템 빈칸으로
-                    ClickedItem.GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/empty");
-                }
-            }  
-
-            ClickedItem.transform.localPosition = itemPos[int.Parse(ClickedItem.name.Split('g')[1])];
-            ClickedItem = null;
-            isCliked = false;
-        }
+        ClickedItem.transform.position = Input.GetTouch(0).position;
     }
 
     int ReturnClickedItemPrice(string clickedItemName) //아이템을 되팔기할 때 해당 아이템 가격을 리턴한다.

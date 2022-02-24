@@ -20,13 +20,19 @@ public class EndingSceneManager : MonoBehaviour
     //Replay Button 클릭 시
     public void Replay()
     {
-        SceneManager.LoadScene("Main");
+        //사운드
+        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Click"));
+
+        Invoke("LoadStartGame", 0.5f);
     }
 
     //Title Button 클릭 시
     public void GoTitle()
     {
-        SceneManager.LoadScene("Title");
+        //사운드
+        SoundManager.instance.PlaySound(SoundManager.instance.SelectSound("Click"));
+
+        Invoke("LoadTitle", 0.5f);
     }
 
     void ViewKilledGhostCnt()
@@ -40,6 +46,16 @@ public class EndingSceneManager : MonoBehaviour
         {
             killedGhostCntTxt[i].text = ": " + killedGhost[i].ToString();
         }
+    }
+
+    void LoadTitle()
+    {
+        SceneManager.LoadScene("Title");
+    }
+
+    void LoadStartGame()
+    {
+        SceneManager.LoadScene("Main");
     }
 
 }//End Class
