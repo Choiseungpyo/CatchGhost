@@ -638,7 +638,7 @@ public class Ghost : MonoBehaviour
             CancelInvoke("ChangeYGMovingToFalse");
             ygMoving = true;
             YellowGhost.transform.position = new Vector3(0, 6, 1);
-            YellowGhost.transform.SetSiblingIndex(5);
+
             Invoke("ChangeYGMovingToFalse", SetYGRandomTimeToAppear());
         }
         else if (ghostNum == 4) //Black Ghost
@@ -647,7 +647,7 @@ public class Ghost : MonoBehaviour
             CancelInvoke("ChangeBNGMovingToFalse");
             bngMoving = true;
             BlackNeonGhost.transform.position = new Vector3(0, 6, 1);
-            BlackNeonGhost.transform.SetSiblingIndex(4);
+
             Invoke("ChangeBNGMovingToFalse", SetBNGRandomTimeToAppear());
         }
         else if (ghostNum == 3) //Purple Ghost
@@ -1088,11 +1088,11 @@ public class Ghost : MonoBehaviour
     {
         if (ygMoving == false)
         {
-            StartCoroutine("ChangeYeloowGhostPos");
+            StartCoroutine("ChangeYellowGhostPos");
         }
     }
 
-    IEnumerator ChangeYeloowGhostPos()
+    IEnumerator ChangeYellowGhostPos()
     {
         Vector3[] ygPos = new Vector3[4];
         Vector3[] ygScale = new Vector3[3];
